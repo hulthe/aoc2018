@@ -1,5 +1,5 @@
 #![feature(test)]
-use std::collections::BTreeSet;
+use std::collections::HashSet;
 use std::error::Error;
 use std::io::BufRead;
 
@@ -21,7 +21,7 @@ pub fn sum_freqs<R: BufRead>(reader: R) -> Result<i32, Box<Error>> {
 
 pub fn freqs_first_dup<R: BufRead>(reader: R) -> Result<i32, Box<Error>> {
     let pattern: Vec<i32> = parse_freqs(reader).collect();
-    let mut history: BTreeSet<i32> = BTreeSet::new();
+    let mut history: HashSet<i32> = HashSet::with_capacity(pattern.len());
 
     let mut last = 0;
     loop {
