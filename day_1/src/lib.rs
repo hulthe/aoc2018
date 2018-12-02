@@ -53,7 +53,6 @@ mod tests {
             ("+3\n+3\n+4\n-2\n-4", 10),
             ("-6\n+3\n+8\n+5\n-6", 5),
             ("+7\n+7\n-2\n-7\n-4", 14),
-            ("+9999\n+1\n-9999\n+1", 9999),
         ];
         let cases = cr.iter_mut().map(|(i, r)| (io::Cursor::new(i), r));
 
@@ -63,12 +62,32 @@ mod tests {
     }
 
     #[bench]
-    fn bench_sum_range(b: &mut Bencher) {
+    fn bench_sum_4(b: &mut Bencher) {
         b.iter(sum_test)
     }
 
+    fn bench_find_dup(b: &mut Bencher, steps: i32) {
+        let data = format!("+{}\n+1\n-{}\n+1", steps, steps);
+
+        b.iter(|| {
+            let iter = io::Cursor::new(&data);
+            assert_eq!(freqs_first_dup(iter).unwrap(), steps);
+        })
+
+    }
+
     #[bench]
-    fn bench_find_dup(b: &mut Bencher) {
-        b.iter(first_dup_test)
+    fn bench_find_dup_100(b: &mut Bencher) {
+        bench_find_dup(b, 100);
+    }
+
+    #[bench]
+    fn bench_find_dup_1000(b: &mut Bencher) {
+        bench_find_dup(b, 1000);
+    }
+
+    #[bench]
+    fn bench_find_dup_10000(b: &mut Bencher) {
+        bench_find_dup(b, 10000);
     }
 }
