@@ -1,9 +1,11 @@
 [package]
 name = "aoc_2018"
-version = "0.1.0"
+version = "2.0.0"
 authors = ["Joakim Hulthe <joakim@hulthe.net>"]
+description = "Solver for Advent of Code 2018"
 edition = "2018"
 
 [dependencies]
 clap = "2.32.0"
 aoc_2018_day_1 = { path="day_1" }
+aoc_2018_day_2 = { path="day_2" }

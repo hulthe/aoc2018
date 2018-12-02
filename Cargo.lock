@@ -8,14 +8,19 @@ dependencies = [
 
 [[package]]
 name = "aoc_2018"
-version = "0.1.0"
+version = "2.0.0"
 dependencies = [
  "aoc_2018_day_1 0.1.0",
+ "aoc_2018_day_2 0.1.0",
  "clap 2.32.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "aoc_2018_day_1"
+version = "0.1.0"
+
+[[package]]
+name = "aoc_2018_day_2"
 version = "0.1.0"
 
 [[package]]
