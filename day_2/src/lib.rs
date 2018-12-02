@@ -50,9 +50,7 @@ pub fn checksum<E, S, I>(iterator: I) -> i32
         let mut map = HashMap::new();
 
         for c in s.as_ref() {
-            if let Some(i) = map.insert(c.clone(), 1) {
-                map.insert(c.clone(), i+1);
-            }
+            *map.entry(c).or_insert(0) += 1;
         }
 
         for &c in map.values() {
