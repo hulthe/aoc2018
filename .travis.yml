@@ -5,9 +5,8 @@ cache:
   directories:
     - $HOME/.cargo
     - $TRAVIS_BUILD_DIR/target
-env:
-- AOC_LIB="day_1"
-- AOC_LIB="day_2"
-- AOC_LIB="day_3"
 script:
-- "cargo test --package aoc_2018_$AOC_LIB"
+- |
+  for d in day_*; do
+    cargo test --package "aoc_2018_$d";
+  done
