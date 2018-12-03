@@ -1,5 +1,4 @@
-#![feature(try_trait)]
-#![feature(custom_attribute)]
+#![feature(test)]
 
 mod parser;
 
@@ -86,6 +85,8 @@ pub fn overlapping<T>(inputs: T) -> Result<usize, Box<Error>>
 
 #[cfg(test)]
 mod tests {
+    extern crate test;
+    use self::test::Bencher;
     use super::*;
 
     const TEST_DATA: &[&str]= &[
@@ -103,5 +104,15 @@ mod tests {
     #[test]
     fn test_safe_claim() {
         assert_eq!(safe_claim(TEST_DATA).unwrap(), 3);
+    }
+
+    #[bench]
+    fn bench_overlapping(b: &mut Bencher) {
+        b.iter(test_overlapping)
+    }
+
+    #[bench]
+    fn bench_safe_claim(b: &mut Bencher) {
+        b.iter(test_safe_claim)
     }
 }
