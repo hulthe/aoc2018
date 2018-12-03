@@ -21,7 +21,11 @@ fn main() {
         .subcommand(SubCommand::with_name("day_2")
             .arg(Arg::with_name("day_2_task")
                  .required(true)
-                 .possible_values(&["checksum", "find_box"])));
+                 .possible_values(&["checksum", "find_box"])))
+        .subcommand(SubCommand::with_name("day_3")
+            .arg(Arg::with_name("day_3_task")
+                 .required(true)
+                 .possible_values(&["overlapping", "safe_claims"])));
 
     let matches = app.get_matches();
 
@@ -42,6 +46,18 @@ fn main() {
             Some("find_box") => println!("Result: {}", find_similar_id(stdin_lines(&stdin))
                                          .unwrap_or("No id found...".into())),
             _ => eprintln!("No task was issued"),
+        }
+    }
+    else if let Some(sub_matches) = matches.subcommand_matches("day_3") {
+        use aoc_2018_day_3::{overlapping, safe_claim};
+        match sub_matches.value_of("day_3_task") {
+            Some("overlapping") => println!(
+                "Result: {}",
+                overlapping(stdin_lines(&stdin)).unwrap()),
+            Some("safe_claims") => println!(
+                "Result: {}",
+                safe_claim(stdin_lines(&stdin)).unwrap()),
+            v => eprintln!("Not a valid task: {:?}", v),
         }
     } else {
         println!("{}", matches.usage());

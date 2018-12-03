@@ -1,0 +1,10 @@
+int = { ('0' .. '9')+ }
+
+id = { "#" ~ int+ }
+
+coord = { int ~ "," ~ int }
+
+size = { int ~ "x" ~ int }
+
+rect = { id ~ " @ " ~ coord ~ ": " ~ size }
+rects = { (rect ~ "\n"*)+ }
