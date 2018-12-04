@@ -1,6 +1,7 @@
 use std::io;
 use clap::{crate_name, crate_authors, crate_description, crate_version, app_from_crate, SubCommand, Arg};
 use std::io::{BufRead, Stdin};
+use aoc_base::AoC;
 
 fn stdin_lines<'a>(stdin: &'a Stdin) -> Box<(dyn Iterator<Item=String> + 'a)> {
     let iter = stdin.lock()
@@ -25,7 +26,11 @@ fn main() {
         .subcommand(SubCommand::with_name("day_3")
             .arg(Arg::with_name("day_3_task")
                  .required(true)
-                 .possible_values(&["overlapping", "safe_claims"])));
+                 .possible_values(&["overlapping", "safe_claims"])))
+        .subcommand(SubCommand::with_name("day_4")
+            .arg(Arg::with_name("day_4_task")
+                 .required(true)
+                 .possible_values(&["task_a", "task_b"])));
 
     let matches = app.get_matches();
 
@@ -57,6 +62,18 @@ fn main() {
             Some("safe_claims") => println!(
                 "Result: {}",
                 safe_claim(stdin_lines(&stdin)).unwrap()),
+            v => eprintln!("Not a valid task: {:?}", v),
+        }
+    }
+    else if let Some(sub_matches) = matches.subcommand_matches("day_4") {
+        use aoc_2018_day_4::{Day4};
+        match sub_matches.value_of("day_4_task") {
+            Some("task_a") => println!(
+                "Result: {}",
+                Day4::task_a(stdin_lines(&stdin)).unwrap()),
+            Some("task_b") => println!(
+                "Result: {}",
+                Day4::task_b(stdin_lines(&stdin)).unwrap()),
             v => eprintln!("Not a valid task: {:?}", v),
         }
     } else {

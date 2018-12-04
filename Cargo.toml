@@ -7,6 +7,8 @@ edition = "2018"
 
 [dependencies]
 clap = "2.32.0"
+aoc_base = { path="aoc_base" }
 aoc_2018_day_1 = { path="day_1" }
 aoc_2018_day_2 = { path="day_2" }
 aoc_2018_day_3 = { path="day_3" }
+aoc_2018_day_4 = { path="day_4" }
