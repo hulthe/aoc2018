@@ -2,11 +2,16 @@
 name = "aoc_2018_day_3"
 version = "0.1.0"
 dependencies = [
+ "aoc_base 0.1.0",
  "from-pest 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "pest 2.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "pest-ast 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "pest_derive 2.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
+
+[[package]]
+name = "aoc_base"
+version = "0.1.0"
 
 [[package]]
 name = "arrayref"

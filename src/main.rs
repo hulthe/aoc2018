@@ -1,82 +1,139 @@
-use std::io;
-use clap::{crate_name, crate_authors, crate_description, crate_version, app_from_crate, SubCommand, Arg};
-use std::io::{BufRead, Stdin};
+#![feature(await_macro)]
+use aoc_2018_day1::Day1;
+use aoc_2018_day2::Day2;
+use aoc_2018_day3::Day3;
+use aoc_2018_day4::Day4;
 use aoc_base::AoC;
+use clap::{
+    app_from_crate, crate_authors, crate_description, crate_name, crate_version, Arg, SubCommand,
+};
+use serde_derive::Deserialize;
+use std::fs::File;
+use std::io::prelude::*;
+use std::thread;
+use std::time::Duration;
+use std::sync::{Arc, mpsc::channel};
 
-fn stdin_lines<'a>(stdin: &'a Stdin) -> Box<(dyn Iterator<Item=String> + 'a)> {
-    let iter = stdin.lock()
-        .lines()
-        .filter_map(|r| r.ok());
-    Box::new(iter)
+use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
+use reqwest;
+
+#[derive(Deserialize)]
+struct Config {
+    url: String,
+    session: String,
+}
+
+fn take_input(year: u32, day: u8) -> impl IntoIterator<Item = String> {
+    let mut config_data = String::new();
+    let mut file = File::open("config.toml")
+        .expect("Could not open config");
+    file.read_to_string(&mut config_data)
+        .expect("Could not read config");
+    let config: Config = toml::from_str(&config_data)
+        .expect("Could not parse config");
+
+    let client = reqwest::Client::new();
+    let mut resp = client.get(&format!("{}/{}/day/{}/input", config.url, year, day))
+        .header("cookie", format!("session={}", config.session))
+        .send()
+        .expect("Could not connect to adventofcode");
+    let body = resp.text().expect("Could not get response body");
+    body.lines().map(|s| s.to_string()).collect::<Vec<_>>()
+}
+
+macro_rules! setup_days {
+    ($app:ident, $d:ident) => {{
+       $app.subcommand(
+            SubCommand::with_name(&stringify!($d).to_lowercase())
+                .arg(Arg::with_name(concat!(stringify!($d), "Task")) //FIXME: task name
+                     .required(true)
+                     .possible_values(&["task_a", "task_b"])))
+    }};
+    ($app:ident, $d:ident, $($ds:ident),+) => {{
+        let tmp = setup_days!($app, $d);
+        setup_days!(tmp, $($ds),*)
+    }};
+}
+
+macro_rules! run_days_async {
+    ($vec:ident, $mp:ident, $d:ident) => {{
+    }};
+    ($vec:ident, $mp:ident, $d:ident, $($ds:ident),+) => {{
+        let spinner_style = ProgressStyle::default_spinner()
+            //.tick_chars("⠁⠂⠄⡀⢀⠠⠐⠈ ")
+            .tick_chars("|/-\\ ")
+            .template("{prefix:.bold.dim} {spinner} {wide_msg}");
+        let pb = $mp.add(ProgressBar::new_spinner());
+        pb.set_style(spinner_style);
+        pb.set_prefix(&stringify!($d));
+        //pb.enable_steady_tick(100);
+        let handle = thread::spawn(move|| {
+            let (tx, rx) = channel();
+            let pb = Arc::new(pb);
+            let pb2 = pb.clone();
+            thread::spawn(move|| loop {
+                if let Ok(_) = rx.try_recv() { return; }
+                thread::sleep(Duration::from_millis(75));
+                pb2.inc(1);
+            });
+            //pb.enable_steady_tick(100);
+
+            pb.set_message("fetching data...");
+            let input: Vec<_> = take_input(2018, stringify!($d)[3..].parse::<u8>().unwrap()).into_iter().collect();
+
+            pb.set_message("calculating a...");
+            let res_a = $d::task_a(input.clone()).unwrap();
+
+            pb.set_message("calculating b...");
+            let res_b = $d::task_b(input).unwrap();
+
+            tx.send(()).ok();
+            pb.finish_with_message(&format!("Result A: {:7}   B: {}", res_a, res_b));
+        });
+        $vec.push(handle);
+        run_days_async!($vec, $mp, $($ds),*);
+    }};
+}
+
+macro_rules! run_days {
+    ($matches:ident, $d:ident) => {{
+        unreachable!("No day selected");
+    }};
+    ($matches:ident, all, $($ds:ident),+) => {{
+            if let Some(_) = $matches.subcommand_matches("all") {
+                let mp = MultiProgress::new();
+                let mut handles: Vec<_> = vec![];
+                run_days_async!(handles, mp, $($ds),*);
+                mp.join().unwrap();
+            } else {
+                run_days!($matches, $($ds),*)
+            }
+    }};
+    ($matches:ident, $d:ident, $($ds:ident),+) => {{
+        if let Some(sub_matches) = $matches.subcommand_matches(&stringify!($d).to_lowercase()) {
+            let input = take_input(2018, stringify!($d)[3..].parse::<u8>().unwrap());
+            match sub_matches.value_of(concat!(stringify!($d), "Task")) {
+                Some("task_a") => println!("Result: {}", $d::task_a(input).unwrap()),
+                Some("task_b") => println!("Result: {}", $d::task_b(input).unwrap()),
+                _ => unreachable!("No task selected"),
+            }
+        } else {
+            run_days!($matches, $($ds),*)
+        }
+    }};
 }
 
 fn main() {
     let app = app_from_crate!()
         .version(env!("CARGO_PKG_VERSION"))
         .about(env!("CARGO_PKG_DESCRIPTION"))
-        .after_help("Note that this program takes input from STDIN.")
-        .subcommand(SubCommand::with_name("day_1")
-            .arg(Arg::with_name("day_1_task")
-                 .required(true)
-                 .possible_values(&["sum", "dup"])))
-        .subcommand(SubCommand::with_name("day_2")
-            .arg(Arg::with_name("day_2_task")
-                 .required(true)
-                 .possible_values(&["checksum", "find_box"])))
-        .subcommand(SubCommand::with_name("day_3")
-            .arg(Arg::with_name("day_3_task")
-                 .required(true)
-                 .possible_values(&["overlapping", "safe_claims"])))
-        .subcommand(SubCommand::with_name("day_4")
-            .arg(Arg::with_name("day_4_task")
-                 .required(true)
-                 .possible_values(&["task_a", "task_b"])));
+        .after_help("Don't forget to set your config.toml!")
+        .subcommand(SubCommand::with_name("all")
+            .about("Compute all days"));
+
+    let app = setup_days!(app, Day1, Day2, Day3, Day4);
 
     let matches = app.get_matches();
 
-    let stdin = io::stdin();
-
-    if let Some(sub_matches) = matches.subcommand_matches("day_1") {
-        use aoc_2018_day_1::{sum_freqs, freqs_first_dup};
-        match sub_matches.value_of("day_1_task") {
-            Some("sum") => println!("Result: {}", sum_freqs(stdin.lock()).unwrap()),
-            Some("dup") => println!("Result: {}", freqs_first_dup(stdin.lock()).unwrap()),
-            _ => eprintln!("No task was issued"),
-        }
-    }
-    else if let Some(sub_matches) = matches.subcommand_matches("day_2") {
-        use aoc_2018_day_2::{checksum, find_similar_id};
-        match sub_matches.value_of("day_2_task") {
-            Some("checksum") => println!("Result: {}", checksum(stdin_lines(&stdin))),
-            Some("find_box") => println!("Result: {}", find_similar_id(stdin_lines(&stdin))
-                                         .unwrap_or("No id found...".into())),
-            _ => eprintln!("No task was issued"),
-        }
-    }
-    else if let Some(sub_matches) = matches.subcommand_matches("day_3") {
-        use aoc_2018_day_3::{overlapping, safe_claim};
-        match sub_matches.value_of("day_3_task") {
-            Some("overlapping") => println!(
-                "Result: {}",
-                overlapping(stdin_lines(&stdin)).unwrap()),
-            Some("safe_claims") => println!(
-                "Result: {}",
-                safe_claim(stdin_lines(&stdin)).unwrap()),
-            v => eprintln!("Not a valid task: {:?}", v),
-        }
-    }
-    else if let Some(sub_matches) = matches.subcommand_matches("day_4") {
-        use aoc_2018_day_4::{Day4};
-        match sub_matches.value_of("day_4_task") {
-            Some("task_a") => println!(
-                "Result: {}",
-                Day4::task_a(stdin_lines(&stdin)).unwrap()),
-            Some("task_b") => println!(
-                "Result: {}",
-                Day4::task_b(stdin_lines(&stdin)).unwrap()),
-            v => eprintln!("Not a valid task: {:?}", v),
-        }
-    } else {
-        println!("{}", matches.usage());
-    }
+    run_days!(matches, all, Day1, Day2, Day3, Day4, FIXME);
 }

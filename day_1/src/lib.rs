@@ -1,69 +1,83 @@
 #![feature(test)]
 use std::collections::HashSet;
 use std::error::Error;
-use std::io::BufRead;
+use aoc_base::AoC;
 
-extern crate test;
+pub struct Day1;
 
-fn parse_freqs<'a, R: BufRead + 'a>(reader: R) -> Box<(dyn Iterator<Item = i32> + 'a)> {
-    let iter = reader
-        .lines()
-        .filter_map(|l| l.ok())
-        .filter_map(|s| s.parse::<i32>().ok());
-    Box::new(iter)
+impl Day1 {
+    fn parse_freqs<T>(reader: T) -> impl Iterator<Item = i32>
+    where T: IntoIterator,
+          T::Item: AsRef<str>,
+    {
+        let iter = reader
+            .into_iter()
+            .filter_map(|s| s.as_ref().parse::<i32>().ok());
+        Box::new(iter)
+    }
 }
 
-pub fn sum_freqs<R: BufRead>(reader: R) -> Result<i32, Box<Error>> {
-    let sum = parse_freqs(reader).sum();
+impl<T> AoC<T, i32, i32> for Day1
+    where T: IntoIterator,
+          T::Item: AsRef<str>,
+{
+    /// Sum the frequencies
+    fn task_a(reader: T) -> Result<i32, Box<Error>> {
+        let sum = Self::parse_freqs(reader).sum();
 
-    Ok(sum)
-}
+        Ok(sum)
+    }
 
-pub fn freqs_first_dup<R: BufRead>(reader: R) -> Result<i32, Box<Error>> {
-    let pattern: Vec<i32> = parse_freqs(reader).collect();
-    let mut history: HashSet<i32> = HashSet::with_capacity(pattern.len());
+    /// Find the first duplicate frequency
+    fn task_b(reader: T) -> Result<i32, Box<Error>> {
+        let pattern: Vec<i32> = Self::parse_freqs(reader).collect();
+        let mut history: HashSet<i32> = HashSet::with_capacity(pattern.len());
 
-    let mut last = 0;
-    loop {
-        for num in pattern.iter() {
-            if !history.insert(last) {
-                return Ok(last);
+        let mut last = 0;
+        loop {
+            for num in pattern.iter() {
+                if !history.insert(last) {
+                    return Ok(last);
+                }
+                last += num;
             }
-            last += num;
         }
     }
 }
 
+
 #[cfg(test)]
 mod tests {
+    extern crate test;
+    use std::io;
     use self::test::Bencher;
     use super::*;
-    use std::io;
+    use std::io::BufRead;
+    use aoc_base::AoC;
 
     #[test]
-    fn sum_test() {
-        let cursor = io::Cursor::new(b"+4\n-6\n+33");
-        assert_eq!(sum_freqs(cursor).unwrap(), 31);
+    fn test_a() {
+        let cursor = io::Cursor::new(b"+4\n-6\n+33").lines().map(|l| l.unwrap());
+        assert_eq!(Day1::task_a(cursor).unwrap(), 31);
     }
 
-    #[test]
-    fn first_dup_test() {
-        let mut cr = vec![
-            ("1\n-1", 0),
-            ("+3\n+3\n+4\n-2\n-4", 10),
-            ("-6\n+3\n+8\n+5\n-6", 5),
-            ("+7\n+7\n-2\n-7\n-4", 14),
-        ];
-        let cases = cr.iter_mut().map(|(i, r)| (io::Cursor::new(i), r));
+    const TEST_DATA_B: &[(&[&str], i32)] = &[
+        (&["1", "-1"], 0),
+        (&["+3", "+3", "+4", "-2", "-4"], 10),
+        (&["-6", "+3", "+8", "+5", "-6"], 5),
+        (&["+7", "+7", "-2", "-7", "-4"], 14),
+    ];
 
-        for (i, r) in cases {
-            assert_eq!(freqs_first_dup(i).unwrap(), r.clone());
+    #[test]
+    fn test_b() {
+        for (i, r) in TEST_DATA_B {
+            assert_eq!(Day1::task_b(*i).unwrap(), r.clone());
         }
     }
 
     #[bench]
     fn bench_sum_4(b: &mut Bencher) {
-        b.iter(sum_test)
+        b.iter(test_b)
     }
 
     fn bench_find_dup(b: &mut Bencher, steps: i32) {
@@ -71,7 +85,7 @@ mod tests {
 
         b.iter(|| {
             let iter = io::Cursor::new(&data);
-            assert_eq!(freqs_first_dup(iter).unwrap(), steps);
+            assert_eq!(Day1::task_b(iter.lines().map(|l| l.unwrap())).unwrap(), steps);
         })
 
     }

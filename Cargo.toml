@@ -6,9 +6,15 @@ description = "Solver for Advent of Code 2018"
 edition = "2018"
 
 [dependencies]
+toml = "0.4.2"
+serde = "1.0.80"
+serde_derive = "1.0.80"
 clap = "2.32.0"
+hyper = "0.12.16"
+reqwest = "0.9.5"
+indicatif = "0.10.2"
 aoc_base = { path="aoc_base" }
-aoc_2018_day_1 = { path="day_1" }
-aoc_2018_day_2 = { path="day_2" }
-aoc_2018_day_3 = { path="day_3" }
-aoc_2018_day_4 = { path="day_4" }
+aoc_2018_day1 = { path="day_1" }
+aoc_2018_day2 = { path="day_2" }
+aoc_2018_day3 = { path="day_3" }
+aoc_2018_day4 = { path="day_4" }

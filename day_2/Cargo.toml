@@ -1,7 +1,8 @@
 [package]
-name = "aoc_2018_day_2"
+name = "aoc_2018_day2"
 version = "0.1.0"
 authors = ["Joakim Hulthe <joakim@hulthe.net>"]
 edition = "2018"
 
 [dependencies]
+aoc_base = { path="../aoc_base" }
