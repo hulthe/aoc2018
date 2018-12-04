@@ -4,6 +4,7 @@ mod parser;
 
 use std::error::Error;
 use std::collections::{HashMap, HashSet};
+use std::iter::repeat;
 use crate::parser::{RectParser, Rectangle, Rule};
 use pest::Parser;
 use from_pest::FromPest;
@@ -22,14 +23,11 @@ pub fn parse_squares<T>(inputs: T) ->
         })
         .map(|r| {
             let (x, y) = (r.coord.x.v, r.coord.y.v);
-            let (w, h) = (r.size.w.v, &r.size.h.v);
+            let (w, h) = (r.size.w.v, r.size.h.v);
+            let v: Vec<_> = (x..(x+w))
+                .flat_map(|i| repeat(i).zip(y..(y+h)))
+                .collect();
 
-            let mut v: Vec<(i32, i32)> = Vec::new();
-            for i in x..(x+w) {
-                for j in y..(y+h) {
-                    v.push((i,j));
-                }
-            }
             (r.id.value.v, v.into_iter())
         });
 
