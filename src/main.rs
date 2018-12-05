@@ -3,6 +3,7 @@ use aoc_2018_day1::Day1;
 use aoc_2018_day2::Day2;
 use aoc_2018_day3::Day3;
 use aoc_2018_day4::Day4;
+use aoc_2018_day5::Day5;
 use aoc_base::AoC;
 use clap::{
     app_from_crate, crate_authors, crate_description, crate_name, crate_version, Arg, SubCommand,
@@ -10,9 +11,9 @@ use clap::{
 use serde_derive::Deserialize;
 use std::fs::File;
 use std::io::prelude::*;
+use std::sync::{mpsc::channel, Arc};
 use std::thread;
 use std::time::Duration;
-use std::sync::{Arc, mpsc::channel};
 
 use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
 use reqwest;
@@ -25,15 +26,14 @@ struct Config {
 
 fn take_input(year: u32, day: u8) -> impl IntoIterator<Item = String> {
     let mut config_data = String::new();
-    let mut file = File::open("config.toml")
-        .expect("Could not open config");
+    let mut file = File::open("config.toml").expect("Could not open config");
     file.read_to_string(&mut config_data)
         .expect("Could not read config");
-    let config: Config = toml::from_str(&config_data)
-        .expect("Could not parse config");
+    let config: Config = toml::from_str(&config_data).expect("Could not parse config");
 
     let client = reqwest::Client::new();
-    let mut resp = client.get(&format!("{}/{}/day/{}/input", config.url, year, day))
+    let mut resp = client
+        .get(&format!("{}/{}/day/{}/input", config.url, year, day))
         .header("cookie", format!("session={}", config.session))
         .send()
         .expect("Could not connect to adventofcode");
@@ -128,12 +128,11 @@ fn main() {
         .version(env!("CARGO_PKG_VERSION"))
         .about(env!("CARGO_PKG_DESCRIPTION"))
         .after_help("Don't forget to set your config.toml!")
-        .subcommand(SubCommand::with_name("all")
-            .about("Compute all days"));
+        .subcommand(SubCommand::with_name("all").about("Compute all days"));
 
-    let app = setup_days!(app, Day1, Day2, Day3, Day4);
+    let app = setup_days!(app, Day1, Day2, Day3, Day4, Day5);
 
     let matches = app.get_matches();
 
-    run_days!(matches, all, Day1, Day2, Day3, Day4, FIXME);
+    run_days!(matches, all, Day1, Day2, Day3, Day4, Day5, FIXME);
 }

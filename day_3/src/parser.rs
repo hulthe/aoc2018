@@ -1,6 +1,6 @@
 use pest::Span;
-use pest_derive::*;
 use pest_ast::FromPest;
+use pest_derive::*;
 
 #[derive(Parser)]
 #[grammar = "rectangles.pest"]

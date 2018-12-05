@@ -1,10 +1,10 @@
 #![feature(test)]
 
-use std::error::Error;
-use std::collections::HashMap;
+use aoc_base::AoC;
 use chrono::{prelude::*, Duration};
 use rayon::prelude::*;
-use aoc_base::AoC;
+use std::collections::HashMap;
+use std::error::Error;
 
 pub struct Day4;
 
@@ -16,18 +16,23 @@ enum GuardState {
 
 impl Day4 {
     fn parse_inputs<T>(inputs: T) -> Vec<(NaiveDateTime, usize, GuardState)>
-        where T: IntoIterator,
-              T::Item: AsRef<str>,
+    where
+        T: IntoIterator,
+        T::Item: AsRef<str>,
     {
         let mut vec: Vec<String> = inputs.into_iter().map(|s| s.as_ref().to_owned()).collect();
         vec.sort();
 
         let mut last_id: usize = 0;
         vec.iter()
-            .map(|l| (
-                Utc.datetime_from_str(&l[1..17], "%Y-%m-%d %H:%M").unwrap().naive_utc(),
-                &l[19..],
-            ))
+            .map(|l| {
+                (
+                    Utc.datetime_from_str(&l[1..17], "%Y-%m-%d %H:%M")
+                        .unwrap()
+                        .naive_utc(),
+                    &l[19..],
+                )
+            })
             .map(|(t, r)| {
                 let state = match r.trim() {
                     "wakes up" => GuardState::Awake,
@@ -35,7 +40,8 @@ impl Day4 {
                     new_shift => {
                         last_id = new_shift[7..]
                             .trim_end_matches(" begins shift")
-                            .parse::<usize>().unwrap();
+                            .parse::<usize>()
+                            .unwrap();
                         GuardState::Awake
                     }
                 };
@@ -44,10 +50,10 @@ impl Day4 {
             .collect()
     }
 
-
     fn calculate_schedule<T>(inputs: T) -> HashMap<usize, ([usize; 60], usize)>
-        where T: IntoIterator,
-              T::Item: AsRef<str>,
+    where
+        T: IntoIterator,
+        T::Item: AsRef<str>,
     {
         let mut sleep_schedule: HashMap<usize, ([usize; 60], usize)> = HashMap::new();
 
@@ -55,24 +61,28 @@ impl Day4 {
 
         let minute = Duration::minutes(1);
         let mut iter = inputs.iter();
-        let mut last: &(NaiveDateTime, usize, GuardState)
-            = iter.next().unwrap().clone();
+        let mut last: &(NaiveDateTime, usize, GuardState) = iter.next().unwrap().clone();
         for this in iter {
             let (time, id, _) = this;
             let (last_time, last_id, last_state) = last;
             if *last_state == GuardState::Asleep {
                 if id != last_id {
                     let mut tick = last_time.time();
-                    if tick.hour() != 0 { panic!("Guard slept through his entire shift"); }
+                    if tick.hour() != 0 {
+                        panic!("Guard slept through his entire shift");
+                    }
                     while tick < NaiveTime::from_hms(0, 59, 0) {
-                        let (schedule, sum) = sleep_schedule.entry(*last_id).or_insert(([0; 60], 0));
+                        let (schedule, sum) =
+                            sleep_schedule.entry(*last_id).or_insert(([0; 60], 0));
                         schedule[tick.minute() as usize] += 1;
                         *sum += 1;
                         tick += minute;
                     }
                 } else {
                     let mut tick = last_time.clone();
-                    if tick.hour() != 0 { panic!("Guard is asleep before he even started..."); }
+                    if tick.hour() != 0 {
+                        panic!("Guard is asleep before he even started...");
+                    }
                     while tick < *time {
                         let (schedule, sum) = sleep_schedule.entry(*id).or_insert(([0; 60], 0));
                         schedule[tick.minute() as usize] += 1;
@@ -89,20 +99,23 @@ impl Day4 {
 }
 
 impl<T> AoC<T, usize, usize> for Day4
-    where T: IntoIterator,
-          T::Item: AsRef<str>,
+where
+    T: IntoIterator,
+    T::Item: AsRef<str>,
 {
     fn task_a(inputs: T) -> Result<usize, Box<Error>> {
         let sleep_schedule = Day4::calculate_schedule(inputs);
 
-        let (sleepiest_guard, _) = sleep_schedule.par_iter()
+        let (sleepiest_guard, _) = sleep_schedule
+            .par_iter()
             .map(|(guard, (_, sum))| (guard, sum))
-            .reduce(|| (&0, &0), |guard1, guard2| {
-                match guard1.1 > guard2.1 {
-                    true  => guard1,
+            .reduce(
+                || (&0, &0),
+                |guard1, guard2| match guard1.1 > guard2.1 {
+                    true => guard1,
                     false => guard2,
-                }
-            });
+                },
+            );
 
         //let mut sleepiest_guard: usize = 0;
         //let mut sleepiest_sum: usize = 0;
@@ -129,19 +142,16 @@ impl<T> AoC<T, usize, usize> for Day4
     fn task_b(inputs: T) -> Result<usize, Box<Error>> {
         let sleep_schedule = Day4::calculate_schedule(inputs);
 
-        let (guard, minute_index, _) = sleep_schedule.iter()
+        let (guard, minute_index, _) = sleep_schedule
+            .iter()
             .map(|(guard, (schedule, _))| (guard, schedule))
             .map(|(guard, schedule)| {
                 let (minute_index, minute_count) = (0..60)
                     .map(|i| (i, schedule[i]))
-                    .fold((0, 0), |m1, m2|
-                        if m1.1 > m2.1 {m1} else {m2}
-                    );
+                    .fold((0, 0), |m1, m2| if m1.1 > m2.1 { m1 } else { m2 });
                 (guard, minute_index, minute_count)
             })
-            .fold((&0, 0, 0), |g1, g2|
-                if g1.2 > g2.2 {g1} else {g2}
-            );
+            .fold((&0, 0, 0), |g1, g2| if g1.2 > g2.2 { g1 } else { g2 });
 
         Ok(guard * minute_index)
     }

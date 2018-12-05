@@ -1,14 +1,15 @@
 #![feature(test)]
+use aoc_base::AoC;
 use std::collections::HashSet;
 use std::error::Error;
-use aoc_base::AoC;
 
 pub struct Day1;
 
 impl Day1 {
     fn parse_freqs<T>(reader: T) -> impl Iterator<Item = i32>
-    where T: IntoIterator,
-          T::Item: AsRef<str>,
+    where
+        T: IntoIterator,
+        T::Item: AsRef<str>,
     {
         let iter = reader
             .into_iter()
@@ -18,8 +19,9 @@ impl Day1 {
 }
 
 impl<T> AoC<T, i32, i32> for Day1
-    where T: IntoIterator,
-          T::Item: AsRef<str>,
+where
+    T: IntoIterator,
+    T::Item: AsRef<str>,
 {
     /// Sum the frequencies
     fn task_a(reader: T) -> Result<i32, Box<Error>> {
@@ -45,15 +47,14 @@ impl<T> AoC<T, i32, i32> for Day1
     }
 }
 
-
 #[cfg(test)]
 mod tests {
     extern crate test;
-    use std::io;
     use self::test::Bencher;
     use super::*;
-    use std::io::BufRead;
     use aoc_base::AoC;
+    use std::io;
+    use std::io::BufRead;
 
     #[test]
     fn test_a() {
@@ -85,9 +86,11 @@ mod tests {
 
         b.iter(|| {
             let iter = io::Cursor::new(&data);
-            assert_eq!(Day1::task_b(iter.lines().map(|l| l.unwrap())).unwrap(), steps);
+            assert_eq!(
+                Day1::task_b(iter.lines().map(|l| l.unwrap())).unwrap(),
+                steps
+            );
         })
-
     }
 
     #[bench]

@@ -1,12 +1,13 @@
-use std::error::Error;
-use std::collections::HashMap;
 use aoc_base::AoC;
+use std::collections::HashMap;
+use std::error::Error;
 
 pub struct Day2;
 
 impl<T> AoC<T, i32, String> for Day2
-    where T: IntoIterator,
-          T::Item: AsRef<str>,
+where
+    T: IntoIterator,
+    T::Item: AsRef<str>,
 {
     /// Compute a checksum for the ids
     fn task_a(inputs: T) -> Result<i32, Box<Error>> {
@@ -22,20 +23,26 @@ impl<T> AoC<T, i32, String> for Day2
             }
 
             for &c in map.values() {
-                if c == 2 { has_two = true; }
-                else if c == 3 { has_three = true; }
+                if c == 2 {
+                    has_two = true;
+                } else if c == 3 {
+                    has_three = true;
+                }
             }
 
-            if has_two { twos += 1; }
-            if has_three {threes += 1; }
+            if has_two {
+                twos += 1;
+            }
+            if has_three {
+                threes += 1;
+            }
         }
 
         return Ok(twos * threes);
     }
 
     /// Find the one id which only differs by one character to another id
-    fn task_b(inputs: T) -> Result<String, Box<Error>>
-    {
+    fn task_b(inputs: T) -> Result<String, Box<Error>> {
         let ids: Vec<String> = inputs.into_iter().map(|s| s.as_ref().to_owned()).collect();
 
         // Return a vec of indices for the differing elements
@@ -68,22 +75,15 @@ impl<T> AoC<T, i32, String> for Day2
     }
 }
 
-
 #[cfg(test)]
 mod tests {
-    use aoc_base::AoC;
     use super::*;
+    use aoc_base::AoC;
 
     #[test]
     fn test_find_similar_id() {
         let input = vec![
-            "abcde",
-            "fghij",
-            "klmno",
-            "pqrst",
-            "fguij",
-            "axcye",
-            "wvxyz",
+            "abcde", "fghij", "klmno", "pqrst", "fguij", "axcye", "wvxyz",
         ];
         assert_eq!(Day2::task_b(input).unwrap(), "fgij");
     }
@@ -91,13 +91,7 @@ mod tests {
     #[test]
     fn test_checksum() {
         let input = vec![
-            "abcdef",
-            "bababc",
-            "abbcde",
-            "abcccd",
-            "aabcdd",
-            "abcdee",
-            "ababab",
+            "abcdef", "bababc", "abbcde", "abcccd", "aabcdd", "abcdee", "ababab",
         ];
         assert_eq!(Day2::task_a(input).unwrap(), 12);
     }
