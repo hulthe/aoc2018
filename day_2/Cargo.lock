@@ -1,5 +1,5 @@
 [[package]]
-name = "aoc_2018_day_2"
+name = "aoc_2018_day2"
 version = "0.1.0"
 dependencies = [
  "aoc_base 0.1.0",

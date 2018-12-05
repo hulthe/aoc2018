@@ -8,5 +8,5 @@ cache:
 script:
 - |
   for d in day_*; do
-    cargo test --package "aoc_2018_$d";
+    cargo test --package "aoc_2018$d";
   done
