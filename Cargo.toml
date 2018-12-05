@@ -14,8 +14,8 @@ hyper = "0.12.16"
 reqwest = "0.9.5"
 indicatif = "0.10.2"
 aoc_base = { path="aoc_base" }
-aoc_2018_day1 = { path="day_1" }
-aoc_2018_day2 = { path="day_2" }
-aoc_2018_day3 = { path="day_3" }
-aoc_2018_day4 = { path="day_4" }
-aoc_2018_day5 = { path="day_5" }
+aoc_2018_day1 = { path="day1" }
+aoc_2018_day2 = { path="day2" }
+aoc_2018_day3 = { path="day3" }
+aoc_2018_day4 = { path="day4" }
+aoc_2018_day5 = { path="day5" }

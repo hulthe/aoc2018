@@ -7,6 +7,6 @@ cache:
     - $TRAVIS_BUILD_DIR/target
 script:
 - |
-  for d in day_*; do
-    cargo test --package "aoc_2018$d";
+  for d in day*; do
+    cargo test --package "aoc_2018_$d";
   done
