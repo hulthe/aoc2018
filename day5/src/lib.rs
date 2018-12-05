@@ -34,35 +34,18 @@ impl Day5 {
     where
         T: IntoIterator<Item = char>,
     {
-        let mut polymer: Vec<char> = input.into_iter().collect();
-        loop {
-            let mut new: Vec<char> = vec![];
-            let a = polymer.iter();
-            let b = polymer.iter().skip(1).chain(repeat(&' '));
-            let iter = a.zip(b).map(|(&a, &b)| {
-                let keep = Self::keep_char(&a, &b);
-                (a, keep)
-            });
-
-            let mut skip = false;
-            for (a, k) in iter {
-                if skip {
-                    skip = false;
+        let mut collapsed: Vec<char> = Vec::new();
+        for c in input {
+            if let Some(cp) = collapsed.last() {
+                if !Self::keep_char(cp, &c) {
+                    collapsed.pop();
                     continue;
                 }
-                if k {
-                    new.push(a);
-                } else {
-                    skip = true;
-                }
             }
-
-            if new.len() == polymer.len() {
-                break;
-            }
-            std::mem::swap(&mut new, &mut polymer);
+            collapsed.push(c);
         }
-        polymer.len()
+
+        collapsed.len()
     }
 }
 
