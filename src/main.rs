@@ -98,7 +98,7 @@ macro_rules! run_days_async {
 
 macro_rules! run_days {
     ($matches:ident, $d:ident) => {{
-        unreachable!("No day selected");
+        println!("{}", $matches.usage());
     }};
     ($matches:ident, all, $($ds:ident),+) => {{
             if let Some(_) = $matches.subcommand_matches("all") {
