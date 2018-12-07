@@ -98,7 +98,8 @@ macro_rules! run_days {
     }};
     ($matches:ident, $d:ident, $($ds:ident),+) => {{
         if let Some(sub_matches) = $matches.subcommand_matches(&stringify!($d).to_lowercase()) {
-            let input = get_input(2018, stringify!($d)[3..].parse::<u8>().unwrap());
+            let input: String = get_input(2018, stringify!($d)[3..].parse::<u8>().unwrap()).unwrap();
+            let input: Vec<_> = input.lines().collect();
             match sub_matches.value_of(concat!(stringify!($d), "Task")) {
                 Some("task_a") => println!("Result: {}", $d::task_a(input).unwrap()),
                 Some("task_b") => println!("Result: {}", $d::task_b(input).unwrap()),
