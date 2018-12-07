@@ -1,10 +1,10 @@
 use crate::config::{load_config, Config};
+use std::collections::hash_map::DefaultHasher;
 use std::error::Error;
 use std::fs::File;
+use std::hash::{Hash, Hasher};
 use std::io::{Read, Write};
 use std::path::PathBuf;
-use std::collections::hash_map::DefaultHasher;
-use std::hash::{Hasher, Hash};
 
 fn download_input(year: u32, day: u8, config: &Config) -> Result<String, Box<Error>> {
     let client = reqwest::Client::new();

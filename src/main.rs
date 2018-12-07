@@ -13,10 +13,10 @@ use aoc_base::AoC;
 use clap::{
     app_from_crate, crate_authors, crate_description, crate_name, crate_version, Arg, SubCommand,
 };
+use std::error::Error;
 use std::sync::{mpsc::channel, Arc};
 use std::thread;
 use std::time::Duration;
-use std::error::Error;
 
 use crate::input::get_input;
 use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
@@ -61,13 +61,12 @@ macro_rules! run_days_async {
 
                 pb.set_message("Fetching Fata...");
                 let input: String = get_input(2018, stringify!($d)[3..].parse::<u8>()?)?;
-                let input: Vec<_> = input.lines().collect();
 
                 pb.set_message("Calculating A...");
-                let res_a = $d::task_a(input.clone())?;
+                let res_a = $d::task_a(&input)?;
 
                 pb.set_message("Calculating B...");
-                let res_b = $d::task_b(input)?;
+                let res_b = $d::task_b(&input)?;
 
                 pb.finish_with_message(&format!("Result A: {:7}   B: {}", res_a, res_b));
                 Ok(())
@@ -100,10 +99,9 @@ macro_rules! run_days {
     ($matches:ident, $d:ident, $($ds:ident),+) => {{
         if let Some(sub_matches) = $matches.subcommand_matches(&stringify!($d).to_lowercase()) {
             let input: String = get_input(2018, stringify!($d)[3..].parse::<u8>().unwrap()).unwrap();
-            let input: Vec<_> = input.lines().collect();
             match sub_matches.value_of(concat!(stringify!($d), "Task")) {
-                Some("task_a") => println!("Result: {}", $d::task_a(input).unwrap()),
-                Some("task_b") => println!("Result: {}", $d::task_b(input).unwrap()),
+                Some("task_a") => println!("Result: {}", $d::task_a(&input).unwrap()),
+                Some("task_b") => println!("Result: {}", $d::task_b(&input).unwrap()),
                 _ => unreachable!("No task selected"),
             }
         } else {

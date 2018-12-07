@@ -1,34 +1,50 @@
 #![feature(test)]
 
 use aoc_base::AoC;
-use std::error::Error;
-use std::collections::{HashMap, HashSet};
 use binary_heap_plus::BinaryHeap;
+use rayon::prelude::*;
+use std::collections::{HashMap, HashSet};
+use std::error::Error;
 
 pub struct Day7;
 
-fn work_completion_time<T>(inputs: T, worker_count: usize, base_time: usize) -> Result<usize, Box<Error>>
-where
-    T: IntoIterator,
-    T::Item: AsRef<str>,
-{
-    let mut workers: HashMap<char, usize> = HashMap::new();
-    let mut all_nodes: HashSet<char> = HashSet::new();
-    let mut dependencies: HashMap<char, HashSet<char>> = HashMap::new();
-    inputs.into_iter()
+fn get_nodes_with_dependencies(input: &str) -> (HashSet<char>, HashMap<char, HashSet<char>>) {
+    let input: Vec<&str> = input.lines().collect();
+    let fold_id = || (HashSet::new(), HashMap::new());
+    input
+        .into_par_iter()
         .map(|l| {
-            let mut cs = l.as_ref().chars();
+            let mut cs = l.chars();
             let (fst, snd) = (cs.nth(5).unwrap(), cs.nth(30).unwrap());
-            all_nodes.insert(fst);
-            all_nodes.insert(snd);
             (snd, fst)
         })
-        .for_each(|(snd, fst)| {
-            dependencies.entry(snd).or_insert(HashSet::new()).insert(fst);
-        });
+        .fold(fold_id, |(mut nodes, mut deps), (snd, fst)| {
+            nodes.insert(fst);
+            nodes.insert(snd);
+            deps.entry(snd).or_insert(HashSet::new()).insert(fst);
+            (nodes, deps)
+        })
+        .reduce(fold_id, |(mut nds1, mut dps1), (nds2, dps2)| {
+            nds1.extend(nds2);
+            for (k, v) in dps2.iter() {
+                dps1.entry(*k).or_insert(HashSet::new()).extend(v);
+            }
+            (nds1, dps1)
+        })
+}
+
+fn work_completion_time(
+    input: &str,
+    worker_count: usize,
+    base_time: usize,
+) -> Result<usize, Box<Error>> {
+    let mut workers: HashMap<char, usize> = HashMap::new();
+
+    let (all_nodes, mut dependencies) = get_nodes_with_dependencies(input);
 
     let mut pqueue = BinaryHeap::new_min();
-    all_nodes.iter()
+    all_nodes
+        .iter()
         .filter(|&n| !dependencies.contains_key(n))
         .for_each(|&n| pqueue.push(n));
 
@@ -42,12 +58,15 @@ where
                 break;
             }
         }
-        if workers.len() == 0 {break};
+        if workers.len() == 0 {
+            break;
+        };
 
         let mut work = true;
         while work {
             seconds += 1;
-            workers = workers.into_iter()
+            workers = workers
+                .into_iter()
                 .filter_map(|(node, time_left)| {
                     if time_left > 0 {
                         Some((node, time_left - 1))
@@ -67,28 +86,12 @@ where
     Ok(seconds)
 }
 
-impl<T> AoC<T, String, usize> for Day7
-where
-    T: IntoIterator,
-    T::Item: AsRef<str>,
-{
-    fn task_a(inputs: T) -> Result<String, Box<Error>> {
-        let mut all_nodes: HashSet<char> = HashSet::new();
-        let mut dependencies: HashMap<char, HashSet<char>> = HashMap::new();
-        inputs.into_iter()
-            .map(|l| {
-                let mut cs = l.as_ref().chars();
-                let (fst, snd) = (cs.nth(5).unwrap(), cs.nth(30).unwrap());
-                all_nodes.insert(fst);
-                all_nodes.insert(snd);
-                (snd, fst)
-            })
-            .for_each(|(snd, fst)| {
-                dependencies.entry(snd).or_insert(HashSet::new()).insert(fst);
-            });
-
+impl AoC<String, usize> for Day7 {
+    fn task_a(input: &str) -> Result<String, Box<Error>> {
+        let (all_nodes, mut dependencies) = get_nodes_with_dependencies(input);
         let mut pqueue = BinaryHeap::new_min();
-        all_nodes.iter()
+        all_nodes
+            .iter()
             .filter(|&n| !dependencies.contains_key(n))
             .for_each(|&n| pqueue.push(n));
 
@@ -105,7 +108,7 @@ where
         Ok(result.iter().collect())
     }
 
-    fn task_b(inputs: T) -> Result<usize, Box<Error>> {
+    fn task_b(inputs: &str) -> Result<usize, Box<Error>> {
         work_completion_time(inputs, 5, 60)
     }
 }
@@ -114,18 +117,16 @@ where
 mod tests {
     extern crate test;
     use self::test::Bencher;
-    use aoc_base::AoC;
     use super::*;
+    use aoc_base::AoC;
 
-    const TEST_DATA: &[&str] = &[
-        "Step C must be finished before step A can begin.",
-        "Step C must be finished before step F can begin.",
-        "Step A must be finished before step B can begin.",
-        "Step A must be finished before step D can begin.",
-        "Step B must be finished before step E can begin.",
-        "Step D must be finished before step E can begin.",
-        "Step F must be finished before step E can begin.",
-    ];
+    const TEST_DATA: &str = "Step C must be finished before step A can begin.\n\
+                             Step C must be finished before step F can begin.\n\
+                             Step A must be finished before step B can begin.\n\
+                             Step A must be finished before step D can begin.\n\
+                             Step B must be finished before step E can begin.\n\
+                             Step D must be finished before step E can begin.\n\
+                             Step F must be finished before step E can begin.";
 
     #[test]
     fn test_a() {

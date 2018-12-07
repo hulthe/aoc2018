@@ -49,24 +49,14 @@ impl Day5 {
     }
 }
 
-impl<T> AoC<T, usize, usize> for Day5
-where
-    T: IntoIterator,
-    T::Item: AsRef<str>,
-{
-    fn task_a(inputs: T) -> Result<usize, Box<Error>> {
-        let input = inputs.into_iter().next().unwrap();
-        Ok(Self::react_polymer(input.as_ref().chars()))
+impl AoC<usize, usize> for Day5 {
+    fn task_a(inputs: &str) -> Result<usize, Box<Error>> {
+        let input = inputs.lines().next().unwrap();
+        Ok(Self::react_polymer(input.chars()))
     }
 
-    fn task_b(inputs: T) -> Result<usize, Box<Error>> {
-        let polymer: Vec<char> = inputs
-            .into_iter()
-            .next()
-            .unwrap()
-            .as_ref()
-            .chars()
-            .collect();
+    fn task_b(inputs: &str) -> Result<usize, Box<Error>> {
+        let polymer: Vec<char> = inputs.lines().next().unwrap().chars().collect();
         let polymer_iter = repeat(polymer.clone());
         let mut all_units: HashSet<char> = HashSet::with_capacity(25);
         for c in polymer {
@@ -85,7 +75,6 @@ where
             })
             .map(|p| Self::react_polymer(p))
             .reduce(|| std::usize::MAX, std::cmp::min);
-        //.fold(std::usize::MAX, std::cmp::min);
         Ok(shortest)
     }
 }
@@ -97,22 +86,22 @@ mod tests {
     use super::Day5;
     use aoc_base::AoC;
 
-    const TEST_DATA_A: &[(&[&str], usize)] = &[
-        (&["aA"], 0),
-        (&["abBA"], 0),
-        (&["abAB"], 4),
-        (&["aabAAB"], 6),
-        (&["dabAcCaCBAcCcaDA"], 10),
+    const TEST_DATA_A: &[(&str, usize)] = &[
+        ("aA", 0),
+        ("abBA", 0),
+        ("abAB", 4),
+        ("aabAAB", 6),
+        ("dabAcCaCBAcCcaDA", 10),
     ];
 
     #[test]
     fn test_a() {
         for (input, result) in TEST_DATA_A {
-            assert_eq!(Day5::task_a(*input).unwrap(), *result);
+            assert_eq!(Day5::task_a(input).unwrap(), *result);
         }
     }
 
-    const TEST_DATA_B: (&[&str], usize) = (&["dabAcCaCBAcCcaDA"], 4);
+    const TEST_DATA_B: (&str, usize) = ("dabAcCaCBAcCcaDA", 4);
 
     #[test]
     fn test_b() {

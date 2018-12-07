@@ -15,12 +15,8 @@ enum GuardState {
 }
 
 impl Day4 {
-    fn parse_inputs<T>(inputs: T) -> Vec<(NaiveDateTime, usize, GuardState)>
-    where
-        T: IntoIterator,
-        T::Item: AsRef<str>,
-    {
-        let mut vec: Vec<String> = inputs.into_iter().map(|s| s.as_ref().to_owned()).collect();
+    fn parse_inputs(inputs: &str) -> Vec<(NaiveDateTime, usize, GuardState)> {
+        let mut vec: Vec<String> = inputs.lines().map(|s| s.to_owned()).collect();
         vec.sort();
 
         let mut last_id: usize = 0;
@@ -50,11 +46,7 @@ impl Day4 {
             .collect()
     }
 
-    fn calculate_schedule<T>(inputs: T) -> HashMap<usize, ([usize; 60], usize)>
-    where
-        T: IntoIterator,
-        T::Item: AsRef<str>,
-    {
+    fn calculate_schedule(inputs: &str) -> HashMap<usize, ([usize; 60], usize)> {
         let mut sleep_schedule: HashMap<usize, ([usize; 60], usize)> = HashMap::new();
 
         let inputs = Self::parse_inputs(inputs);
@@ -98,12 +90,8 @@ impl Day4 {
     }
 }
 
-impl<T> AoC<T, usize, usize> for Day4
-where
-    T: IntoIterator,
-    T::Item: AsRef<str>,
-{
-    fn task_a(inputs: T) -> Result<usize, Box<Error>> {
+impl AoC<usize, usize> for Day4 {
+    fn task_a(inputs: &str) -> Result<usize, Box<Error>> {
         let sleep_schedule = Day4::calculate_schedule(inputs);
 
         let (sleepiest_guard, _) = sleep_schedule
@@ -139,7 +127,7 @@ where
         Ok(sleepiest_guard * sleepiest_minute_i)
     }
 
-    fn task_b(inputs: T) -> Result<usize, Box<Error>> {
+    fn task_b(inputs: &str) -> Result<usize, Box<Error>> {
         let sleep_schedule = Day4::calculate_schedule(inputs);
 
         let (guard, minute_index, _) = sleep_schedule
@@ -164,25 +152,23 @@ mod tests {
     use super::Day4;
     use aoc_base::AoC;
 
-    const TEST_DATA: &[&str] = &[
-        "[1518-11-01 00:55] wakes up              ",
-        "[1518-11-04 00:02] Guard #99 begins shift",
-        "[1518-11-01 23:58] Guard #99 begins shift",
-        "[1518-11-05 00:45] falls asleep          ",
-        "[1518-11-05 00:03] Guard #99 begins shift",
-        "[1518-11-03 00:24] falls asleep          ",
-        "[1518-11-03 00:05] Guard #10 begins shift",
-        "[1518-11-05 00:55] wakes up              ",
-        "[1518-11-03 00:29] wakes up              ",
-        "[1518-11-01 00:00] Guard #10 begins shift",
-        "[1518-11-02 00:40] falls asleep          ",
-        "[1518-11-01 00:05] falls asleep          ",
-        "[1518-11-02 00:50] wakes up              ",
-        "[1518-11-04 00:36] falls asleep          ",
-        "[1518-11-01 00:25] wakes up              ",
-        "[1518-11-01 00:30] falls asleep          ",
-        "[1518-11-04 00:46] wakes up              ",
-    ];
+    const TEST_DATA: &str = "[1518-11-01 00:55] wakes up              \n\
+                             [1518-11-04 00:02] Guard #99 begins shift\n\
+                             [1518-11-01 23:58] Guard #99 begins shift\n\
+                             [1518-11-05 00:45] falls asleep          \n\
+                             [1518-11-05 00:03] Guard #99 begins shift\n\
+                             [1518-11-03 00:24] falls asleep          \n\
+                             [1518-11-03 00:05] Guard #10 begins shift\n\
+                             [1518-11-05 00:55] wakes up              \n\
+                             [1518-11-03 00:29] wakes up              \n\
+                             [1518-11-01 00:00] Guard #10 begins shift\n\
+                             [1518-11-02 00:40] falls asleep          \n\
+                             [1518-11-01 00:05] falls asleep          \n\
+                             [1518-11-02 00:50] wakes up              \n\
+                             [1518-11-04 00:36] falls asleep          \n\
+                             [1518-11-01 00:25] wakes up              \n\
+                             [1518-11-01 00:30] falls asleep          \n\
+                             [1518-11-04 00:46] wakes up              ";
 
     #[test]
     fn test_a() {

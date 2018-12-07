@@ -2,8 +2,8 @@
 
 mod parser;
 
-use aoc_base::AoC;
 use crate::parser::{RectParser, Rectangle, Rule};
+use aoc_base::AoC;
 use from_pest::FromPest;
 use pest::Parser;
 use std::collections::{HashMap, HashSet};
@@ -13,16 +13,13 @@ use std::iter::repeat;
 pub struct Day3;
 
 impl Day3 {
-    fn parse_squares<T>(
-        inputs: T,
-    ) -> Result<impl Iterator<Item = (i32, impl Iterator<Item = (i32, i32)>)>, Box<Error>>
-    where
-        T: IntoIterator,
-        T::Item: AsRef<str>,
+    fn parse_squares<'a>(
+        inputs: &'a str,
+    ) -> Result<impl Iterator<Item = (i32, impl Iterator<Item = (i32, i32)>)> + 'a, Box<Error>>
     {
         let iter = inputs
-            .into_iter()
-            .map(|s| s.as_ref().to_owned())
+            .lines()
+            .map(|s| s.to_owned())
             .map(|s| {
                 let mut p = RectParser::parse(Rule::rect, &s).unwrap();
                 Rectangle::from_pest(&mut p).unwrap()
@@ -41,13 +38,9 @@ impl Day3 {
     }
 }
 
-impl<T> AoC<T, usize, i32> for Day3
-where
-    T: IntoIterator,
-    T::Item: AsRef<str>,
-{
+impl AoC<usize, i32> for Day3 {
     /// Get number of overlapping cells
-    fn task_a(inputs: T) -> Result<usize, Box<Error>> {
+    fn task_a(inputs: &str) -> Result<usize, Box<Error>> {
         let mut overlapping: usize = 0;
         let mut map: HashMap<(i32, i32), usize> = HashMap::with_capacity(30 * 30);
         for (_, cells) in Self::parse_squares(inputs)? {
@@ -64,7 +57,7 @@ where
     }
 
     /// Find the one box which doesn't overlap
-    fn task_b(inputs: T) -> Result<i32, Box<Error>> {
+    fn task_b(inputs: &str) -> Result<i32, Box<Error>> {
         let mut possible_claims: HashSet<i32> = HashSet::new();
         let mut map: HashMap<(i32, i32), Vec<i32>> = HashMap::with_capacity(30 * 30);
         for (id, cells) in Self::parse_squares(inputs)? {
@@ -98,7 +91,7 @@ mod tests {
     use super::*;
     use aoc_base::AoC;
 
-    const TEST_DATA: &[&str] = &["#1 @ 1,3: 4x4", "#2 @ 3,1: 4x4", "#3 @ 5,5: 2x2"];
+    const TEST_DATA: &str = "#1 @ 1,3: 4x4\n#2 @ 3,1: 4x4\n#3 @ 5,5: 2x2";
 
     #[test]
     fn test_a() {

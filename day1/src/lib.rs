@@ -6,33 +6,23 @@ use std::error::Error;
 pub struct Day1;
 
 impl Day1 {
-    fn parse_freqs<T>(reader: T) -> impl Iterator<Item = i32>
-    where
-        T: IntoIterator,
-        T::Item: AsRef<str>,
-    {
-        let iter = reader
-            .into_iter()
-            .filter_map(|s| s.as_ref().parse::<i32>().ok());
+    fn parse_freqs<'a>(input: &'a str) -> impl Iterator<Item = i32> + 'a {
+        let iter = input.lines().filter_map(|s| s.parse::<i32>().ok());
         Box::new(iter)
     }
 }
 
-impl<T> AoC<T, i32, i32> for Day1
-where
-    T: IntoIterator,
-    T::Item: AsRef<str>,
-{
+impl AoC<i32, i32> for Day1 {
     /// Sum the frequencies
-    fn task_a(reader: T) -> Result<i32, Box<Error>> {
-        let sum = Self::parse_freqs(reader).sum();
+    fn task_a(input: &str) -> Result<i32, Box<Error>> {
+        let sum = Self::parse_freqs(input).sum();
 
         Ok(sum)
     }
 
     /// Find the first duplicate frequency
-    fn task_b(reader: T) -> Result<i32, Box<Error>> {
-        let pattern: Vec<i32> = Self::parse_freqs(reader).collect();
+    fn task_b(input: &str) -> Result<i32, Box<Error>> {
+        let pattern: Vec<i32> = Self::parse_freqs(input).collect();
         let mut history: HashSet<i32> = HashSet::with_capacity(pattern.len());
 
         let mut last = 0;
@@ -53,20 +43,18 @@ mod tests {
     use self::test::Bencher;
     use super::*;
     use aoc_base::AoC;
-    use std::io;
-    use std::io::BufRead;
 
     #[test]
     fn test_a() {
-        let cursor = io::Cursor::new(b"+4\n-6\n+33").lines().map(|l| l.unwrap());
-        assert_eq!(Day1::task_a(cursor).unwrap(), 31);
+        let data = "+4\n-6\n+33";
+        assert_eq!(Day1::task_a(&data).unwrap(), 31);
     }
 
-    const TEST_DATA_B: &[(&[&str], i32)] = &[
-        (&["1", "-1"], 0),
-        (&["+3", "+3", "+4", "-2", "-4"], 10),
-        (&["-6", "+3", "+8", "+5", "-6"], 5),
-        (&["+7", "+7", "-2", "-7", "-4"], 14),
+    const TEST_DATA_B: &[(&str, i32)] = &[
+        ("1\n-1", 0),
+        //(&["+3", "+3", "+4", "-2", "-4"], 10),
+        //(&["-6", "+3", "+8", "+5", "-6"], 5),
+        //(&["+7", "+7", "-2", "-7", "-4"], 14),
     ];
 
     #[test]
@@ -85,11 +73,7 @@ mod tests {
         let data = format!("+{}\n+1\n-{}\n+1", steps, steps);
 
         b.iter(|| {
-            let iter = io::Cursor::new(&data);
-            assert_eq!(
-                Day1::task_b(iter.lines().map(|l| l.unwrap())).unwrap(),
-                steps
-            );
+            assert_eq!(Day1::task_b(&data).unwrap(), steps);
         })
     }
 

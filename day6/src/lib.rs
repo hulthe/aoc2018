@@ -8,14 +8,10 @@ use std::iter::repeat;
 
 pub struct Day6;
 
-fn parse_inputs<T>(inputs: T) -> Result<Vec<(i32, i32)>, Box<Error>>
-where
-    T: IntoIterator,
-    T::Item: AsRef<str>,
-{
+fn parse_inputs(inputs: &str) -> Result<Vec<(i32, i32)>, Box<Error>> {
     inputs
-        .into_iter()
-        .map(|s| s.as_ref().split(", ").map(|c| c.parse()).collect())
+        .lines()
+        .map(|s| s.split(", ").map(|c| c.parse()).collect())
         .map(|s: Vec<Result<i32, _>>| Ok((s[0].clone()?, s[1].clone()?)))
         .collect()
 }
@@ -49,12 +45,8 @@ fn all_coords(dimensions: (i32, i32, i32, i32)) -> Vec<(i32, i32)> {
         .collect()
 }
 
-impl<T> AoC<T, usize, usize> for Day6
-where
-    T: IntoIterator,
-    T::Item: AsRef<str>,
-{
-    fn task_a(inputs: T) -> Result<usize, Box<Error>> {
+impl AoC<usize, usize> for Day6 {
+    fn task_a(inputs: &str) -> Result<usize, Box<Error>> {
         let coords: Vec<(i32, i32)> = parse_inputs(inputs)?;
         let (min_x, min_y, max_x, max_y) = get_dimensions(&coords);
 
@@ -111,7 +103,7 @@ where
             .fold(0, |s1, (_, s2)| std::cmp::max(s1, *s2)))
     }
 
-    fn task_b(inputs: T) -> Result<usize, Box<Error>> {
+    fn task_b(inputs: &str) -> Result<usize, Box<Error>> {
         let coords: Vec<(i32, i32)> = parse_inputs(inputs)?;
         let all_coords = all_coords(get_dimensions(&coords));
 
@@ -132,7 +124,7 @@ mod tests {
     use super::Day6;
     use aoc_base::AoC;
 
-    const TEST_DATA: &[&str] = &["1, 1", "1, 6", "8, 3", "3, 4", "5, 5", "8, 9"];
+    const TEST_DATA: &str = "1, 1\n1, 6\n8, 3\n3, 4\n5, 5\n8, 9";
 
     #[test]
     fn test_a() {

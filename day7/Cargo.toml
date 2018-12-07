@@ -6,4 +6,5 @@ edition = "2018"
 
 [dependencies]
 binary-heap-plus = "0.1.4"
+rayon = "1.0.3"
 aoc_base = { path="../aoc_base" }
