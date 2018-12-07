@@ -7,6 +7,9 @@ edition = "2018"
 
 [dependencies]
 toml = "0.4.2"
+ron = "0.4.0"
+xdg = "2.2.0"
+hex = "0.3.2"
 serde = "1.0.80"
 serde_derive = "1.0.80"
 clap = "2.32.0"

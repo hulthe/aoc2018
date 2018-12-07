@@ -1,4 +1,7 @@
 #![feature(await_macro)]
+mod config;
+mod input;
+
 use aoc_2018_day1::Day1;
 use aoc_2018_day2::Day2;
 use aoc_2018_day3::Day3;
@@ -9,38 +12,14 @@ use aoc_base::AoC;
 use clap::{
     app_from_crate, crate_authors, crate_description, crate_name, crate_version, Arg, SubCommand,
 };
-use serde_derive::Deserialize;
-use std::fs::File;
-use std::io::prelude::*;
 use std::sync::{mpsc::channel, Arc};
 use std::thread;
 use std::time::Duration;
+use std::error::Error;
 
+use crate::input::get_input;
 use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
 use reqwest;
-
-#[derive(Deserialize)]
-struct Config {
-    url: String,
-    session: String,
-}
-
-fn take_input(year: u32, day: u8) -> impl IntoIterator<Item = String> {
-    let mut config_data = String::new();
-    let mut file = File::open("config.toml").expect("Could not open config");
-    file.read_to_string(&mut config_data)
-        .expect("Could not read config");
-    let config: Config = toml::from_str(&config_data).expect("Could not parse config");
-
-    let client = reqwest::Client::new();
-    let mut resp = client
-        .get(&format!("{}/{}/day/{}/input", config.url, year, day))
-        .header("cookie", format!("session={}", config.session))
-        .send()
-        .expect("Could not connect to adventofcode");
-    let body = resp.text().expect("Could not get response body");
-    body.lines().map(|s| s.to_string()).collect::<Vec<_>>()
-}
 
 macro_rules! setup_days {
     ($app:ident, $d:ident) => {{
@@ -69,27 +48,34 @@ macro_rules! run_days_async {
         pb.set_prefix(&stringify!($d));
         //pb.enable_steady_tick(100);
         let handle = thread::spawn(move|| {
-            let (tx, rx) = channel();
             let pb = Arc::new(pb);
-            let pb2 = pb.clone();
-            thread::spawn(move|| loop {
-                if let Ok(_) = rx.try_recv() { return; }
-                thread::sleep(Duration::from_millis(75));
-                pb2.inc(1);
-            });
-            //pb.enable_steady_tick(100);
+            let (tx, rx) = channel();
+            let run = || -> Result<(), Box<Error>> {
+                let pb2 = pb.clone();
+                thread::spawn(move|| loop {
+                    if let Ok(_) = rx.try_recv() { return; }
+                    thread::sleep(Duration::from_millis(75));
+                    pb2.inc(1);
+                });
 
-            pb.set_message("fetching data...");
-            let input: Vec<_> = take_input(2018, stringify!($d)[3..].parse::<u8>().unwrap()).into_iter().collect();
+                pb.set_message("Fetching Fata...");
+                let input: String = get_input(2018, stringify!($d)[3..].parse::<u8>()?)?;
+                let input: Vec<_> = input.lines().collect();
 
-            pb.set_message("calculating a...");
-            let res_a = $d::task_a(input.clone()).unwrap();
+                pb.set_message("Calculating A...");
+                let res_a = $d::task_a(input.clone())?;
 
-            pb.set_message("calculating b...");
-            let res_b = $d::task_b(input).unwrap();
+                pb.set_message("Calculating B...");
+                let res_b = $d::task_b(input)?;
 
+                pb.finish_with_message(&format!("Result A: {:7}   B: {}", res_a, res_b));
+                Ok(())
+            };
+
+            if let Err(e) = run() {
+                pb.finish_with_message(&format!("Error: {}", e));
+            }
             tx.send(()).ok();
-            pb.finish_with_message(&format!("Result A: {:7}   B: {}", res_a, res_b));
         });
         $vec.push(handle);
         run_days_async!($vec, $mp, $($ds),*);
@@ -112,7 +98,7 @@ macro_rules! run_days {
     }};
     ($matches:ident, $d:ident, $($ds:ident),+) => {{
         if let Some(sub_matches) = $matches.subcommand_matches(&stringify!($d).to_lowercase()) {
-            let input = take_input(2018, stringify!($d)[3..].parse::<u8>().unwrap());
+            let input = get_input(2018, stringify!($d)[3..].parse::<u8>().unwrap());
             match sub_matches.value_of(concat!(stringify!($d), "Task")) {
                 Some("task_a") => println!("Result: {}", $d::task_a(input).unwrap()),
                 Some("task_b") => println!("Result: {}", $d::task_b(input).unwrap()),
