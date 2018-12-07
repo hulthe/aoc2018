@@ -1,0 +1,19 @@
+[[package]]
+name = "aoc_2018_day7"
+version = "0.1.0"
+dependencies = [
+ "aoc_base 0.1.0",
+ "binary-heap-plus 0.1.4 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "aoc_base"
+version = "0.1.0"
+
+[[package]]
+name = "binary-heap-plus"
+version = "0.1.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[metadata]
+"checksum binary-heap-plus 0.1.4 (registry+https://github.com/rust-lang/crates.io-index)" = "f9adb1b5abc665241ec0f3c35c8a8e2d12f71579d2b1496dcbb5b6ea4208ba6c"
