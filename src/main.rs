@@ -9,6 +9,7 @@ use aoc_2018_day4::Day4;
 use aoc_2018_day5::Day5;
 use aoc_2018_day6::Day6;
 use aoc_2018_day7::Day7;
+use aoc_2018_day8::Day8;
 use aoc_base::AoC;
 use clap::{
     app_from_crate, crate_authors, crate_description, crate_name, crate_version, Arg, SubCommand,
@@ -117,9 +118,9 @@ fn main() {
         .after_help("Don't forget to set your config.toml!")
         .subcommand(SubCommand::with_name("all").about("Compute all days"));
 
-    let app = setup_days!(app, Day1, Day2, Day3, Day4, Day5, Day6, Day7);
+    let app = setup_days!(app, Day1, Day2, Day3, Day4, Day5, Day6, Day7, Day8);
 
     let matches = app.get_matches();
 
-    run_days!(matches, all, Day1, Day2, Day3, Day4, Day5, Day6, Day7, FIXME);
+    run_days!(matches, all, Day1, Day2, Day3, Day4, Day5, Day6, Day7, Day8, FIXME);
 }
