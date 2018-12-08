@@ -1,3 +1,4 @@
+#![feature(test)]
 #![feature(await_macro)]
 mod config;
 mod input;
@@ -123,4 +124,36 @@ fn main() {
     let matches = app.get_matches();
 
     run_days!(matches, all, Day1, Day2, Day3, Day4, Day5, Day6, Day7, Day8, FIXME);
+}
+
+#[cfg(test)]
+mod test {
+    extern crate test;
+    use self::test::Bencher;
+    use super::*;
+
+    macro_rules! gen_bench {
+        ($fna:ident, $fnb:ident, $d:ident) => {
+            #[bench]
+            fn $fna (b: &mut Bencher) {
+                let input = get_input(2018, stringify!($d)[3..].parse::<u8>().unwrap()).unwrap();
+                b.iter(|| $d::task_a(&input));
+            }
+
+            #[bench]
+            fn $fnb (b: &mut Bencher) {
+                let input = get_input(2018, stringify!($d)[3..].parse::<u8>().unwrap()).unwrap();
+                b.iter(|| $d::task_b(&input));
+            }
+        }
+    }
+
+    gen_bench!(bench_day1_a, bench_day1_b, Day1);
+    gen_bench!(bench_day2_a, bench_day2_b, Day2);
+    gen_bench!(bench_day3_a, bench_day3_b, Day3);
+    gen_bench!(bench_day4_a, bench_day4_b, Day4);
+    gen_bench!(bench_day5_a, bench_day5_b, Day5);
+    gen_bench!(bench_day6_a, bench_day6_b, Day6);
+    gen_bench!(bench_day7_a, bench_day7_b, Day7);
+    gen_bench!(bench_day8_a, bench_day8_b, Day8);
 }
