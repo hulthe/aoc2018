@@ -11,6 +11,7 @@ use aoc_2018_day5::Day5;
 use aoc_2018_day6::Day6;
 use aoc_2018_day7::Day7;
 use aoc_2018_day8::Day8;
+use aoc_2018_day9::Day9;
 use aoc_base::AoC;
 use clap::{
     app_from_crate, crate_authors, crate_description, crate_name, crate_version, Arg, SubCommand,
@@ -119,11 +120,11 @@ fn main() {
         .after_help("Don't forget to set your config.toml!")
         .subcommand(SubCommand::with_name("all").about("Compute all days"));
 
-    let app = setup_days!(app, Day1, Day2, Day3, Day4, Day5, Day6, Day7, Day8);
+    let app = setup_days!(app, Day1, Day2, Day3, Day4, Day5, Day6, Day7, Day8, Day9);
 
     let matches = app.get_matches();
 
-    run_days!(matches, all, Day1, Day2, Day3, Day4, Day5, Day6, Day7, Day8, FIXME);
+    run_days!(matches, all, Day1, Day2, Day3, Day4, Day5, Day6, Day7, Day8, Day9, FIXME);
 }
 
 #[cfg(test)]
@@ -135,17 +136,17 @@ mod test {
     macro_rules! gen_bench {
         ($fna:ident, $fnb:ident, $d:ident) => {
             #[bench]
-            fn $fna (b: &mut Bencher) {
+            fn $fna(b: &mut Bencher) {
                 let input = get_input(2018, stringify!($d)[3..].parse::<u8>().unwrap()).unwrap();
                 b.iter(|| $d::task_a(&input));
             }
 
             #[bench]
-            fn $fnb (b: &mut Bencher) {
+            fn $fnb(b: &mut Bencher) {
                 let input = get_input(2018, stringify!($d)[3..].parse::<u8>().unwrap()).unwrap();
                 b.iter(|| $d::task_b(&input));
             }
-        }
+        };
     }
 
     gen_bench!(bench_day1_a, bench_day1_b, Day1);
@@ -156,4 +157,5 @@ mod test {
     gen_bench!(bench_day6_a, bench_day6_b, Day6);
     gen_bench!(bench_day7_a, bench_day7_b, Day7);
     gen_bench!(bench_day8_a, bench_day8_b, Day8);
+    gen_bench!(bench_day9_a, bench_day9_b, Day9);
 }

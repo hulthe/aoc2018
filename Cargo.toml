@@ -25,3 +25,4 @@ aoc_2018_day5 = { path="day5" }
 aoc_2018_day6 = { path="day6" }
 aoc_2018_day7 = { path="day7" }
 aoc_2018_day8 = { path="day8" }
+aoc_2018_day9 = { path="day9" }
