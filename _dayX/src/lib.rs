@@ -8,17 +8,13 @@ pub struct DayX;
 impl DayX {
 }
 
-impl<T> AoC<T, usize, usize> for DayX
-where
-    T: IntoIterator,
-    T::Item: AsRef<str>,
-{
-    fn task_a(inputs: T) -> Result<usize, Box<Error>> {
-        Ok(std::usize::MAX) // TODO
+impl AoC<usize, usize> for DayX {
+    fn task_a(input: &str) -> Result<usize, Box<Error>> {
+        unimplemented!();
     }
 
-    fn task_b(inputs: T) -> Result<usize, Box<Error>> {
-        Ok(std::usize::MAX) // TODO
+    fn task_b(input: &str) -> Result<usize, Box<Error>> {
+        unimplemented!();
     }
 }
 
@@ -26,11 +22,10 @@ where
 mod tests {
     extern crate test;
     use self::test::Bencher;
-    use super::DayX;
     use aoc_base::AoC;
+    use super::DayX;
 
-    const TEST_DATA: &[&str] = &[
-    ];
+    const TEST_DATA: &str = "";
 
     #[test]
     fn test_a() {
