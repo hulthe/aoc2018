@@ -63,7 +63,7 @@ fn draw_points(points: &Points) -> String {
                 drawn.push('.');
             }
         }
-        drawn.push('\n');
+        if y != max_y { drawn.push('\n'); }
     }
 
     drawn.into_iter().collect()
@@ -80,21 +80,25 @@ fn tick_points(points: &Points, dt: i32) -> Points {
         .collect()
 }
 
-const Y_RANGE: i32 = 9;
 fn scatter((_, min_y, _, max_y): Bounds) -> i32 {
-    ((max_y - min_y) - Y_RANGE).abs()
+    (max_y - min_y).abs()
 }
 
-fn solve_constellation(input: &str) -> (String, i32) {
+fn solve_constellation(input: &str, font_height: i32) -> (String, i32) {
     let points = parse_input(input);
-
     let bounds = calc_bounds(&points);
+    let init_scatter = scatter(bounds);
+
+    let mut step_size: i32 = 2;
+    while step_size < init_scatter / 20 {
+        step_size *= 2;
+    }
+
     let mut seconds = 0;
-    let mut step_size = 2i32.pow(9);
     let mut state: Points = points;
     while !out_of_bounds(&state, &bounds) {
         let curr_scatter = scatter(calc_bounds(&state));
-        if curr_scatter == 0 {
+        if curr_scatter == font_height {
             break;
         }
 
@@ -117,12 +121,12 @@ fn solve_constellation(input: &str) -> (String, i32) {
 
 impl AoC<String, i32> for Day10 {
     fn task_a(input: &str) -> Result<String, Box<Error>> {
-        let (rendered, _) = solve_constellation(input);
+        let (rendered, _) = solve_constellation(input, 9);
         Ok(rendered)
     }
 
     fn task_b(input: &str) -> Result<i32, Box<Error>> {
-        let (_, seconds) = solve_constellation(input);
+        let (_, seconds) = solve_constellation(input, 9);
         Ok(seconds)
     }
 }
@@ -131,8 +135,7 @@ impl AoC<String, i32> for Day10 {
 mod tests {
     extern crate test;
     use self::test::Bencher;
-    use aoc_base::AoC;
-    use super::Day10;
+    use super::*;
 
     const TEST_DATA: &str = "position=< 9,  1> velocity=< 0,  2>\n\
                              position=< 7,  0> velocity=<-1,  0>\n\
@@ -167,22 +170,24 @@ mod tests {
                              position=<-3,  6> velocity=< 2, -1>";
 
     #[test]
-    fn test_a() {
-        assert_eq!(Day10::task_a(TEST_DATA).unwrap(), "");
-    }
-
-    #[test]
-    fn test_b() {
-        //assert_eq!(Day10::task_b(TEST_DATA).unwrap(), FIXME);
+    fn test() {
+        assert_eq!(
+            solve_constellation(TEST_DATA, 7),
+            (
+                "#...#..###\n\
+                #...#...#.\n\
+                #...#...#.\n\
+                #####...#.\n\
+                #...#...#.\n\
+                #...#...#.\n\
+                #...#...#.\n\
+                #...#..###".into(),
+                3
+            ));
     }
 
     #[bench]
-    fn bench_a(b: &mut Bencher) {
-        b.iter(test_a)
-    }
-
-    #[bench]
-    fn bench_b(b: &mut Bencher) {
-        b.iter(test_b)
+    fn bench(b: &mut Bencher) {
+        b.iter(test)
     }
 }
