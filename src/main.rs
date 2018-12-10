@@ -64,16 +64,23 @@ macro_rules! run_days_async {
                     pb2.inc(1);
                 });
 
-                pb.set_message("Fetching Fata...");
+                pb.set_message("Fetching Data...");
                 let input: String = get_input(2018, stringify!($d)[3..].parse::<u8>()?)?;
 
                 pb.set_message("Calculating A...");
-                let res_a = $d::task_a(&input)?;
+                let res_a = $d::task_a(&input)?.to_string();
 
                 pb.set_message("Calculating B...");
-                let res_b = $d::task_b(&input)?;
+                let res_b = $d::task_b(&input)?.to_string();
 
-                pb.finish_with_message(&format!("Result A: {:7}   B: {}", res_a, res_b));
+                fn hide_long<'a>(s: &'a str) -> &'a str {
+                    if msg_is_slim(s) { s } else { "(...)" }
+                };
+
+                pb.finish_with_message(
+                    &format!("Result A: {:7}   B: {}",
+                             hide_long(&res_a),
+                             hide_long(&res_b)));
                 Ok(())
             };
 
@@ -115,12 +122,16 @@ macro_rules! run_days {
     }};
 }
 
+fn msg_is_slim(msg: &str) -> bool {
+    msg.len() <= 10 && !msg.contains('\n')
+}
+
 fn print_result<D: Display>(res: D) {
     let s = format!("{}", res);
-    if s.len() > 10 || s.contains("\n") {
-        println!("Result:\n{}", s);
-    } else {
+    if msg_is_slim(&s) {
         println!("Result: {}", s);
+    } else {
+        println!("Result:\n{}", s);
     }
 }
 
