@@ -3,15 +3,16 @@
 mod config;
 mod input;
 
-use aoc_2018_day1::Day1;
-use aoc_2018_day2::Day2;
-use aoc_2018_day3::Day3;
-use aoc_2018_day4::Day4;
-use aoc_2018_day5::Day5;
-use aoc_2018_day6::Day6;
-use aoc_2018_day7::Day7;
-use aoc_2018_day8::Day8;
-use aoc_2018_day9::Day9;
+use aoc_2018_day01::Day1;
+use aoc_2018_day02::Day2;
+use aoc_2018_day03::Day3;
+use aoc_2018_day04::Day4;
+use aoc_2018_day05::Day5;
+use aoc_2018_day06::Day6;
+use aoc_2018_day07::Day7;
+use aoc_2018_day08::Day8;
+use aoc_2018_day09::Day9;
+use aoc_2018_day10::Day10;
 use aoc_base::AoC;
 use clap::{
     app_from_crate, crate_authors, crate_description, crate_name, crate_version, Arg, SubCommand,
@@ -20,6 +21,7 @@ use std::error::Error;
 use std::sync::{mpsc::channel, Arc};
 use std::thread;
 use std::time::Duration;
+use std::fmt::Display;
 
 use crate::input::get_input;
 use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
@@ -103,14 +105,23 @@ macro_rules! run_days {
         if let Some(sub_matches) = $matches.subcommand_matches(&stringify!($d).to_lowercase()) {
             let input: String = get_input(2018, stringify!($d)[3..].parse::<u8>().unwrap()).unwrap();
             match sub_matches.value_of(concat!(stringify!($d), "Task")) {
-                Some("task_a") => println!("Result: {}", $d::task_a(&input).unwrap()),
-                Some("task_b") => println!("Result: {}", $d::task_b(&input).unwrap()),
+                Some("task_a") => print_result($d::task_a(&input).unwrap()),
+                Some("task_b") => print_result($d::task_b(&input).unwrap()),
                 _ => unreachable!("No task selected"),
             }
         } else {
             run_days!($matches, $($ds),*)
         }
     }};
+}
+
+fn print_result<D: Display>(res: D) {
+    let s = format!("{}", res);
+    if s.len() > 10 || s.contains("\n") {
+        println!("Result:\n{}", s);
+    } else {
+        println!("Result: {}", s);
+    }
 }
 
 fn main() {
@@ -120,11 +131,11 @@ fn main() {
         .after_help("Don't forget to set your config.toml!")
         .subcommand(SubCommand::with_name("all").about("Compute all days"));
 
-    let app = setup_days!(app, Day1, Day2, Day3, Day4, Day5, Day6, Day7, Day8, Day9);
+    let app = setup_days!(app, Day1, Day2, Day3, Day4, Day5, Day6, Day7, Day8, Day9, Day10);
 
     let matches = app.get_matches();
 
-    run_days!(matches, all, Day1, Day2, Day3, Day4, Day5, Day6, Day7, Day8, Day9, FIXME);
+    run_days!(matches, all, Day1, Day2, Day3, Day4, Day5, Day6, Day7, Day8, Day9, Day10, FIXME);
 }
 
 #[cfg(test)]
@@ -149,13 +160,14 @@ mod test {
         };
     }
 
-    gen_bench!(bench_day1_a, bench_day1_b, Day1);
-    gen_bench!(bench_day2_a, bench_day2_b, Day2);
-    gen_bench!(bench_day3_a, bench_day3_b, Day3);
-    gen_bench!(bench_day4_a, bench_day4_b, Day4);
-    gen_bench!(bench_day5_a, bench_day5_b, Day5);
-    gen_bench!(bench_day6_a, bench_day6_b, Day6);
-    gen_bench!(bench_day7_a, bench_day7_b, Day7);
-    gen_bench!(bench_day8_a, bench_day8_b, Day8);
-    gen_bench!(bench_day9_a, bench_day9_b, Day9);
+    gen_bench!(bench_day01_a, bench_day01_b, Day1);
+    gen_bench!(bench_day02_a, bench_day02_b, Day2);
+    gen_bench!(bench_day03_a, bench_day03_b, Day3);
+    gen_bench!(bench_day04_a, bench_day04_b, Day4);
+    gen_bench!(bench_day05_a, bench_day05_b, Day5);
+    gen_bench!(bench_day06_a, bench_day06_b, Day6);
+    gen_bench!(bench_day07_a, bench_day07_b, Day7);
+    gen_bench!(bench_day08_a, bench_day08_b, Day8);
+    gen_bench!(bench_day09_a, bench_day09_b, Day9);
+    gen_bench!(bench_day10_a, bench_day10_b, Day10);
 }

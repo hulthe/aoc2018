@@ -17,12 +17,13 @@ hyper = "0.12.16"
 reqwest = "0.9.5"
 indicatif = "0.10.2"
 aoc_base = { path="aoc_base" }
-aoc_2018_day1 = { path="day1" }
-aoc_2018_day2 = { path="day2" }
-aoc_2018_day3 = { path="day3" }
-aoc_2018_day4 = { path="day4" }
-aoc_2018_day5 = { path="day5" }
-aoc_2018_day6 = { path="day6" }
-aoc_2018_day7 = { path="day7" }
-aoc_2018_day8 = { path="day8" }
-aoc_2018_day9 = { path="day9" }
+aoc_2018_day01 = { path="day01" }
+aoc_2018_day02 = { path="day02" }
+aoc_2018_day03 = { path="day03" }
+aoc_2018_day04 = { path="day04" }
+aoc_2018_day05 = { path="day05" }
+aoc_2018_day06 = { path="day06" }
+aoc_2018_day07 = { path="day07" }
+aoc_2018_day08 = { path="day08" }
+aoc_2018_day09 = { path="day09" }
+aoc_2018_day10 = { path="day10" }

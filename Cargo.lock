@@ -23,15 +23,16 @@ dependencies = [
 name = "aoc_2018"
 version = "2.0.0"
 dependencies = [
- "aoc_2018_day1 0.1.0",
- "aoc_2018_day2 0.1.0",
- "aoc_2018_day3 0.1.0",
- "aoc_2018_day4 0.1.0",
- "aoc_2018_day5 0.1.0",
- "aoc_2018_day6 0.1.0",
- "aoc_2018_day7 0.1.0",
- "aoc_2018_day8 0.1.0",
- "aoc_2018_day9 0.1.0",
+ "aoc_2018_day01 0.1.0",
+ "aoc_2018_day02 0.1.0",
+ "aoc_2018_day03 0.1.0",
+ "aoc_2018_day04 0.1.0",
+ "aoc_2018_day05 0.1.0",
+ "aoc_2018_day06 0.1.0",
+ "aoc_2018_day07 0.1.0",
+ "aoc_2018_day08 0.1.0",
+ "aoc_2018_day09 0.1.0",
+ "aoc_2018_day10 0.1.0",
  "aoc_base 0.1.0",
  "clap 2.32.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "hex 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -46,21 +47,21 @@ dependencies = [
 ]
 
 [[package]]
-name = "aoc_2018_day1"
+name = "aoc_2018_day01"
 version = "0.1.0"
 dependencies = [
  "aoc_base 0.1.0",
 ]
 
 [[package]]
-name = "aoc_2018_day2"
+name = "aoc_2018_day02"
 version = "0.1.0"
 dependencies = [
  "aoc_base 0.1.0",
 ]
 
 [[package]]
-name = "aoc_2018_day3"
+name = "aoc_2018_day03"
 version = "0.1.0"
 dependencies = [
  "aoc_base 0.1.0",
@@ -71,7 +72,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "aoc_2018_day4"
+name = "aoc_2018_day04"
 version = "0.1.0"
 dependencies = [
  "aoc_base 0.1.0",
@@ -80,7 +81,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "aoc_2018_day5"
+name = "aoc_2018_day05"
 version = "0.1.0"
 dependencies = [
  "aoc_base 0.1.0",
@@ -88,7 +89,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "aoc_2018_day6"
+name = "aoc_2018_day06"
 version = "0.1.0"
 dependencies = [
  "aoc_base 0.1.0",
@@ -96,7 +97,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "aoc_2018_day7"
+name = "aoc_2018_day07"
 version = "0.1.0"
 dependencies = [
  "aoc_base 0.1.0",
@@ -105,14 +106,21 @@ dependencies = [
 ]
 
 [[package]]
-name = "aoc_2018_day8"
+name = "aoc_2018_day08"
 version = "0.1.0"
 dependencies = [
  "aoc_base 0.1.0",
 ]
 
 [[package]]
-name = "aoc_2018_day9"
+name = "aoc_2018_day09"
+version = "0.1.0"
+dependencies = [
+ "aoc_base 0.1.0",
+]
+
+[[package]]
+name = "aoc_2018_day10"
 version = "0.1.0"
 dependencies = [
  "aoc_base 0.1.0",
