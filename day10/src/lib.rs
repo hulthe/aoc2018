@@ -7,6 +7,7 @@ use std::collections::HashSet;
 pub struct Day10;
 
 type Vec2 = (i32, i32);
+type Bounds = (i32, i32, i32, i32);
 type Points = Vec<(Vec2, Vec2)>;
 
 fn parse_input(input: &str) -> Points {
@@ -26,19 +27,28 @@ fn parse_input(input: &str) -> Points {
         .collect()
 }
 
-fn calc_bounds(points: &Points) -> (i32, i32, i32, i32) {
+fn calc_bounds(points: &Points) -> Bounds {
     let mut min_x = std::i32::MAX;
     let mut min_y = std::i32::MAX;
     let mut max_x = std::i32::MIN;
     let mut max_y = std::i32::MIN;
 
-    for (p, _) in points.iter() {
-        if p.0 < min_x { min_x = p.0; }
-        if p.1 < min_y { min_y = p.1; }
-        if p.0 > max_x { max_x = p.0; }
-        if p.1 > max_y { max_y = p.1; }
+    for ((x, y), _) in points.iter() {
+        if *x < min_x { min_x = *x; }
+        if *y < min_y { min_y = *y; }
+        if *x > max_x { max_x = *x; }
+        if *y > max_y { max_y = *y; }
     }
     (min_x, min_y, max_x, max_y)
+}
+
+fn out_of_bounds(points: &Points, original: &Bounds) -> bool {
+    let (minx, miny, maxx, maxy) = original;
+    let (minxp, minyp, maxxp, maxyp) = calc_bounds(&points);
+    minxp < *minx ||
+    minyp < *miny ||
+    maxxp > *maxx ||
+    maxyp > *maxy
 }
 
 fn draw_points(points: &Points) -> String {
@@ -59,84 +69,61 @@ fn draw_points(points: &Points) -> String {
     drawn.into_iter().collect()
 }
 
-fn tick_points(points: &mut Points) {
-    *points = points.iter()
+fn tick_points(points: &Points, dt: i32) -> Points {
+    points.iter()
         .map(|(p, v)| {
             ((
-                p.0 + v.0,
-                p.1 + v.1,
+                p.0 + v.0 * dt,
+                p.1 + v.1 * dt,
             ), (v.0, v.1))
         })
-        .collect();
+        .collect()
 }
 
-fn test_confidence(points: &Points) -> f32 {
-    let map: HashSet<Vec2> = points.iter().map(|(p, _)| *p).collect();
-    let len = map.len();
+const Y_RANGE: i32 = 9;
+fn scatter((_, min_y, _, max_y): Bounds) -> i32 {
+    ((max_y - min_y) - Y_RANGE).abs()
+}
 
-    let adjacent = |p: &Vec2| -> Vec<Vec2> {
-        vec![
-            (p.0 + 1, p.1),
-            (p.0 - 1, p.1),
-            (p.0, p.1 + 1),
-            (p.0, p.1 - 1),
-            (p.0 + 1, p.1 + 1),
-            (p.0 + 1, p.1 - 1),
-            (p.0 - 1, p.1 + 1),
-            (p.0 - 1, p.1 - 1),
-        ]
-    };
+fn solve_constellation(input: &str) -> (String, i32) {
+    let points = parse_input(input);
 
-    let mut vec = Vec::with_capacity(len);
-    for p in map.iter() {
-        if adjacent(p).into_iter().filter(|a| map.get(a).is_some()).count() == 2 {
-            vec.push(p);
+    let bounds = calc_bounds(&points);
+    let mut seconds = 0;
+    let mut step_size = 2i32.pow(9);
+    let mut state: Points = points;
+    while !out_of_bounds(&state, &bounds) {
+        let curr_scatter = scatter(calc_bounds(&state));
+        if curr_scatter == 0 {
+            break;
+        }
+
+        let next = tick_points(&state, step_size);
+        let next_scatter = scatter(calc_bounds(&next));
+
+        if next_scatter < curr_scatter {
+            state = next;
+            seconds += step_size;
+        } else {
+            let half_step = (step_size / 2).max(1);
+            state = tick_points(&state, -half_step);
+            step_size = half_step;
+            seconds -= half_step;
         }
     }
 
-    vec.len() as f32 / len as f32
+    (draw_points(&state), seconds)
 }
 
-impl AoC<String, usize> for Day10 {
+impl AoC<String, i32> for Day10 {
     fn task_a(input: &str) -> Result<String, Box<Error>> {
-        let mut points = parse_input(input);
-
-        let mut possible_states: Vec<(f32, usize, Points)> = Vec::new();
-
-        let init_bounds = calc_bounds(&points);
-        let mut iteration = 0;
-        loop {
-            tick_points(&mut points);
-            iteration += 1;
-
-            let new_bounds = calc_bounds(&points);
-            if new_bounds.0 < init_bounds.0 ||
-                new_bounds.1 < init_bounds.1 ||
-                new_bounds.2 > init_bounds.2 ||
-                new_bounds.3 > init_bounds.3 {
-                break;
-            }
-
-            let confidence = test_confidence(&points);
-            if confidence > 0.0 {
-                possible_states.push((confidence, iteration, points.clone()))
-            };
-        }
-
-        let state = possible_states.into_iter().fold((0.0, 0, vec![]), |a, b| {
-            if a.0 > b.0 {a} else {b}
-        });
-
-        let rendered = draw_points(&state.2);
-
-        //println!("Total {} iterations.", iteration);
-        //println!("Result after {} iterations.", state.1);
-        //println!("Confidence: {}", state.0);
+        let (rendered, _) = solve_constellation(input);
         Ok(rendered)
     }
 
-    fn task_b(input: &str) -> Result<usize, Box<Error>> {
-        unimplemented!();
+    fn task_b(input: &str) -> Result<i32, Box<Error>> {
+        let (_, seconds) = solve_constellation(input);
+        Ok(seconds)
     }
 }
 
