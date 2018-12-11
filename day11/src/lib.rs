@@ -2,14 +2,14 @@
 
 use aoc_base::AoC;
 use std::error::Error;
-use std::iter::repeat;
+use rayon::iter::repeat;
 use std::collections::HashMap;
 use rayon::prelude::*;
 use std::fmt::{Display, self};
 use std::ops::Range;
 
 #[derive(Hash, Debug, PartialEq, Eq, Clone)]
-pub struct Pos(i64, i64);
+pub struct Pos(i32, i32);
 
 impl Display for Pos {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -19,12 +19,15 @@ impl Display for Pos {
 
 pub struct Day11;
 
-fn grid(w: i64, h: i64) -> impl Iterator<Item=Pos> + 'static {
-    (1..=w).zip(repeat(h)).flat_map(|(x, h)| repeat(x).zip(1..=h).map(|p| Pos(p.0, p.1)))
+fn grid(w: i32, h: i32) -> impl ParallelIterator<Item=Pos> + 'static {
+    repeat(h)
+        .zip(1..(w+1))
+        .flat_map(|(h, x)| repeat(x).zip(1..(h+1)))
+        .map(|(x, y)| Pos(x, y))
 }
 
 impl Day11 {
-    pub fn power_level(cell: Pos, serial_number: i64) -> i64 {
+    pub fn power_level(cell: Pos, serial_number: i32) -> i32 {
         let rack_id = cell.0 + 10;
         let mut power_level = rack_id * cell.1;
         power_level += serial_number;
@@ -34,8 +37,8 @@ impl Day11 {
         power_level - 5
     }
 
-    fn gen_sum_grid(serial_number: i64) -> HashMap<Pos, i64> {
-        let mut cells: HashMap<Pos, i64> = HashMap::with_capacity(300*300);
+    fn gen_sum_grid(serial_number: i32) -> HashMap<Pos, i32> {
+        let mut cells: HashMap<Pos, i32> = HashMap::with_capacity(300*300);
         for x in (1..=300).rev() {
             for y in (1..=300).rev() {
                 *cells.entry(Pos(x,y)).or_insert(Self::power_level(Pos(x,y), serial_number)) +=
@@ -47,38 +50,36 @@ impl Day11 {
         cells
     }
 
-    fn get_squares<'a>(size: i64, cells: &'a HashMap<Pos, i64>) -> impl ParallelIterator<Item=(Pos, i64, i64)> + 'a
+    fn get_squares<'a>(size: i32, cells: &'a HashMap<Pos, i32>) -> impl ParallelIterator<Item=(Pos, i32, i32)> + 'a
     {
         grid(300 - size, 300 - size)
-            .collect::<Vec<_>>()
-            .into_par_iter()
             .map(move |Pos(x, y)| {
                 (Pos(x, y), size,
                     cells.get(&Pos(x, y)).unwrap()
-                        -cells.get(&Pos(x + size, y     )).unwrap()
+                        -cells.get(&Pos(x + size, y       )).unwrap()
                         -cells.get(&Pos(x       , y + size)).unwrap()
                         +cells.get(&Pos(x + size, y + size)).unwrap()
                 )
             })
     }
 
-    pub fn largest_power_level_3x3(serial_number: i64) -> (Pos, i64) {
+    pub fn largest_power_level_3x3(serial_number: i32) -> (Pos, i32) {
         let cells = Self::gen_sum_grid(serial_number);
 
         Self::get_squares(3, &cells)
             .map(|(p, _, v)| (p, v))
-            //.fold(((0, 0), std::i64::MIN), |(p1, v1), (p2, v2)| {
-            .reduce(|| (Pos(0, 0), std::i64::MIN), |(p1, v1), (p2, v2)| {
+            //.fold(((0, 0), std::i32::MIN), |(p1, v1), (p2, v2)| {
+            .reduce(|| (Pos(0, 0), std::i32::MIN), |(p1, v1), (p2, v2)| {
                 if v1 > v2 {(p1, v1)} else {(p2, v2)}
             })
     }
 
-    pub fn largest_power_level(serial_number: i64, size_range: Range<i64>) -> (Pos, i64, i64) {
+    pub fn largest_power_level(serial_number: i32, size_range: Range<i32>) -> (Pos, i32, i32) {
         let cells = Self::gen_sum_grid(serial_number);
 
-        size_range.collect::<Vec<_>>().into_par_iter()
+        size_range.into_par_iter()
             .flat_map(|s| Self::get_squares(s, &cells))
-            .reduce(|| (Pos(0, 0), 0, std::i64::MIN), |(p1, s1, v1), (p2, s2, v2)| {
+            .reduce(|| (Pos(0, 0), 0, std::i32::MIN), |(p1, s1, v1), (p2, s2, v2)| {
                 if v1 > v2 {(p1, s1, v1)} else {(p2, s2, v2)}
             })
     }
