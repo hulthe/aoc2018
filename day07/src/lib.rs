@@ -6,7 +6,7 @@ use rayon::prelude::*;
 use std::collections::{HashMap, HashSet};
 use std::error::Error;
 
-pub struct Day7;
+pub struct Day07;
 
 fn get_nodes_with_dependencies(input: &str) -> (HashSet<char>, HashMap<char, HashSet<char>>) {
     let input: Vec<&str> = input.lines().collect();
@@ -86,7 +86,7 @@ fn work_completion_time(
     Ok(seconds)
 }
 
-impl AoC<String, usize> for Day7 {
+impl AoC<String, usize> for Day07 {
     fn task_a(input: &str) -> Result<String, Box<Error>> {
         let (all_nodes, mut dependencies) = get_nodes_with_dependencies(input);
         let mut pqueue = BinaryHeap::new_min();
@@ -130,7 +130,7 @@ mod tests {
 
     #[test]
     fn test_a() {
-        assert_eq!(Day7::task_a(TEST_DATA).unwrap(), "CABDFE");
+        assert_eq!(Day07::task_a(TEST_DATA).unwrap(), "CABDFE");
     }
 
     #[test]

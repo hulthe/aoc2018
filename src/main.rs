@@ -3,15 +3,15 @@
 mod config;
 mod input;
 
-use aoc_2018_day01::Day1;
-use aoc_2018_day02::Day2;
-use aoc_2018_day03::Day3;
-use aoc_2018_day04::Day4;
-use aoc_2018_day05::Day5;
-use aoc_2018_day06::Day6;
-use aoc_2018_day07::Day7;
-use aoc_2018_day08::Day8;
-use aoc_2018_day09::Day9;
+use aoc_2018_day01::Day01;
+use aoc_2018_day02::Day02;
+use aoc_2018_day03::Day03;
+use aoc_2018_day04::Day04;
+use aoc_2018_day05::Day05;
+use aoc_2018_day06::Day06;
+use aoc_2018_day07::Day07;
+use aoc_2018_day08::Day08;
+use aoc_2018_day09::Day09;
 use aoc_2018_day10::Day10;
 use aoc_2018_day11::Day11;
 use aoc_base::AoC;
@@ -143,11 +143,11 @@ fn main() {
         .after_help("Don't forget to set your config.toml!")
         .subcommand(SubCommand::with_name("all").about("Compute all days"));
 
-    let app = setup_days!(app, Day1, Day2, Day3, Day4, Day5, Day6, Day7, Day8, Day9, Day10, Day11);
+    let app = setup_days!(app, Day01, Day02, Day03, Day04, Day05, Day06, Day07, Day08, Day09, Day10, Day11);
 
     let matches = app.get_matches();
 
-    run_days!(matches, all, Day1, Day2, Day3, Day4, Day5, Day6, Day7, Day8, Day9, Day10, Day11, FIXME);
+    run_days!(matches, all, Day01, Day02, Day03, Day04, Day05, Day06, Day07, Day08, Day09, Day10, Day11, FIXME);
 }
 
 #[cfg(test)]
@@ -172,15 +172,15 @@ mod test {
         };
     }
 
-    gen_bench!(bench_day01_a, bench_day01_b, Day1);
-    gen_bench!(bench_day02_a, bench_day02_b, Day2);
-    gen_bench!(bench_day03_a, bench_day03_b, Day3);
-    gen_bench!(bench_day04_a, bench_day04_b, Day4);
-    gen_bench!(bench_day05_a, bench_day05_b, Day5);
-    gen_bench!(bench_day06_a, bench_day06_b, Day6);
-    gen_bench!(bench_day07_a, bench_day07_b, Day7);
-    gen_bench!(bench_day08_a, bench_day08_b, Day8);
-    gen_bench!(bench_day09_a, bench_day09_b, Day9);
+    gen_bench!(bench_day01_a, bench_day01_b, Day01);
+    gen_bench!(bench_day02_a, bench_day02_b, Day02);
+    gen_bench!(bench_day03_a, bench_day03_b, Day03);
+    gen_bench!(bench_day04_a, bench_day04_b, Day04);
+    gen_bench!(bench_day05_a, bench_day05_b, Day05);
+    gen_bench!(bench_day06_a, bench_day06_b, Day06);
+    gen_bench!(bench_day07_a, bench_day07_b, Day07);
+    gen_bench!(bench_day08_a, bench_day08_b, Day08);
+    gen_bench!(bench_day09_a, bench_day09_b, Day09);
     gen_bench!(bench_day10_a, bench_day10_b, Day10);
     gen_bench!(bench_day11_a, bench_day11_b, Day11);
 }

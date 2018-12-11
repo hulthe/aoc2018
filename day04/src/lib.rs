@@ -6,7 +6,7 @@ use rayon::prelude::*;
 use std::collections::HashMap;
 use std::error::Error;
 
-pub struct Day4;
+pub struct Day04;
 
 #[derive(Debug, PartialEq)]
 enum GuardState {
@@ -14,7 +14,7 @@ enum GuardState {
     Asleep,
 }
 
-impl Day4 {
+impl Day04 {
     fn parse_inputs(inputs: &str) -> Vec<(NaiveDateTime, usize, GuardState)> {
         let mut vec: Vec<String> = inputs.lines().map(|s| s.to_owned()).collect();
         vec.sort();
@@ -90,9 +90,9 @@ impl Day4 {
     }
 }
 
-impl AoC<usize, usize> for Day4 {
+impl AoC<usize, usize> for Day04 {
     fn task_a(inputs: &str) -> Result<usize, Box<Error>> {
-        let sleep_schedule = Day4::calculate_schedule(inputs);
+        let sleep_schedule = Day04::calculate_schedule(inputs);
 
         let (sleepiest_guard, _) = sleep_schedule
             .par_iter()
@@ -128,7 +128,7 @@ impl AoC<usize, usize> for Day4 {
     }
 
     fn task_b(inputs: &str) -> Result<usize, Box<Error>> {
-        let sleep_schedule = Day4::calculate_schedule(inputs);
+        let sleep_schedule = Day04::calculate_schedule(inputs);
 
         let (guard, minute_index, _) = sleep_schedule
             .iter()
@@ -149,7 +149,7 @@ impl AoC<usize, usize> for Day4 {
 mod tests {
     extern crate test;
     use self::test::Bencher;
-    use super::Day4;
+    use super::Day04;
     use aoc_base::AoC;
 
     const TEST_DATA: &str = "[1518-11-01 00:55] wakes up              \n\
@@ -172,12 +172,12 @@ mod tests {
 
     #[test]
     fn test_a() {
-        assert_eq!(Day4::task_a(TEST_DATA).unwrap(), 240);
+        assert_eq!(Day04::task_a(TEST_DATA).unwrap(), 240);
     }
 
     #[test]
     fn test_b() {
-        assert_eq!(Day4::task_b(TEST_DATA).unwrap(), 4455);
+        assert_eq!(Day04::task_b(TEST_DATA).unwrap(), 4455);
     }
 
     #[bench]

@@ -2,9 +2,9 @@ use aoc_base::AoC;
 use std::collections::HashMap;
 use std::error::Error;
 
-pub struct Day2;
+pub struct Day02;
 
-impl AoC<i32, String> for Day2 {
+impl AoC<i32, String> for Day02 {
     /// Compute a checksum for the ids
     fn task_a(inputs: &str) -> Result<i32, Box<Error>> {
         let mut twos = 0;
@@ -77,12 +77,12 @@ mod tests {
     const TEST_DATA_A: &str = "abcde\nfghij\nklmno\npqrst\nfguij\naxcye\nwvxyz";
     #[test]
     fn test_find_similar_id() {
-        assert_eq!(Day2::task_b(TEST_DATA_A).unwrap(), "fgij");
+        assert_eq!(Day02::task_b(TEST_DATA_A).unwrap(), "fgij");
     }
 
     const TEST_DATA_B: &str = "abcdef\nbababc\nabbcde\nabcccd\naabcdd\nabcdee\nababab";
     #[test]
     fn test_checksum() {
-        assert_eq!(Day2::task_a(TEST_DATA_B).unwrap(), 12);
+        assert_eq!(Day02::task_a(TEST_DATA_B).unwrap(), 12);
     }
 }

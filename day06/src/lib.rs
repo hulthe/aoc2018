@@ -6,7 +6,7 @@ use std::collections::HashMap;
 use std::error::Error;
 use std::iter::repeat;
 
-pub struct Day6;
+pub struct Day06;
 
 fn parse_inputs(inputs: &str) -> Result<Vec<(i32, i32)>, Box<Error>> {
     inputs
@@ -45,7 +45,7 @@ fn all_coords(dimensions: (i32, i32, i32, i32)) -> Vec<(i32, i32)> {
         .collect()
 }
 
-impl AoC<usize, usize> for Day6 {
+impl AoC<usize, usize> for Day06 {
     fn task_a(inputs: &str) -> Result<usize, Box<Error>> {
         let coords: Vec<(i32, i32)> = parse_inputs(inputs)?;
         let (min_x, min_y, max_x, max_y) = get_dimensions(&coords);
@@ -121,21 +121,21 @@ impl AoC<usize, usize> for Day6 {
 mod tests {
     extern crate test;
     use self::test::Bencher;
-    use super::Day6;
+    use super::Day06;
     use aoc_base::AoC;
 
     const TEST_DATA: &str = "1, 1\n1, 6\n8, 3\n3, 4\n5, 5\n8, 9";
 
     #[test]
     fn test_a() {
-        assert_eq!(Day6::task_a(TEST_DATA).unwrap(), 17);
+        assert_eq!(Day06::task_a(TEST_DATA).unwrap(), 17);
     }
 
     #[test]
     fn test_b() {
         // Note that this gets a region where d < 10000
         // But its only really useful for d < 32
-        assert_eq!(Day6::task_b(TEST_DATA).unwrap(), 72 /* should be 16 */);
+        assert_eq!(Day06::task_b(TEST_DATA).unwrap(), 72 /* should be 16 */);
     }
 
     #[bench]

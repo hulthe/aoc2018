@@ -10,9 +10,9 @@ use std::collections::{HashMap, HashSet};
 use std::error::Error;
 use std::iter::repeat;
 
-pub struct Day3;
+pub struct Day03;
 
-impl Day3 {
+impl Day03 {
     fn parse_squares<'a>(
         inputs: &'a str,
     ) -> Result<impl Iterator<Item = (i32, impl Iterator<Item = (i32, i32)>)> + 'a, Box<Error>>
@@ -38,7 +38,7 @@ impl Day3 {
     }
 }
 
-impl AoC<usize, i32> for Day3 {
+impl AoC<usize, i32> for Day03 {
     /// Get number of overlapping cells
     fn task_a(inputs: &str) -> Result<usize, Box<Error>> {
         let mut overlapping: usize = 0;
@@ -95,12 +95,12 @@ mod tests {
 
     #[test]
     fn test_a() {
-        assert_eq!(Day3::task_a(TEST_DATA).unwrap(), 4);
+        assert_eq!(Day03::task_a(TEST_DATA).unwrap(), 4);
     }
 
     #[test]
     fn test_b() {
-        assert_eq!(Day3::task_b(TEST_DATA).unwrap(), 3);
+        assert_eq!(Day03::task_b(TEST_DATA).unwrap(), 3);
     }
 
     #[bench]

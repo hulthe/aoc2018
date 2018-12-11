@@ -3,16 +3,16 @@ use aoc_base::AoC;
 use std::collections::HashSet;
 use std::error::Error;
 
-pub struct Day1;
+pub struct Day01;
 
-impl Day1 {
+impl Day01 {
     fn parse_freqs<'a>(input: &'a str) -> impl Iterator<Item = i32> + 'a {
         let iter = input.lines().filter_map(|s| s.parse::<i32>().ok());
         Box::new(iter)
     }
 }
 
-impl AoC<i32, i32> for Day1 {
+impl AoC<i32, i32> for Day01 {
     /// Sum the frequencies
     fn task_a(input: &str) -> Result<i32, Box<Error>> {
         let sum = Self::parse_freqs(input).sum();
@@ -47,7 +47,7 @@ mod tests {
     #[test]
     fn test_a() {
         let data = "+4\n-6\n+33";
-        assert_eq!(Day1::task_a(&data).unwrap(), 31);
+        assert_eq!(Day01::task_a(&data).unwrap(), 31);
     }
 
     const TEST_DATA_B: &[(&str, i32)] = &[
@@ -60,7 +60,7 @@ mod tests {
     #[test]
     fn test_b() {
         for (i, r) in TEST_DATA_B {
-            assert_eq!(Day1::task_b(*i).unwrap(), r.clone());
+            assert_eq!(Day01::task_b(*i).unwrap(), r.clone());
         }
     }
 
@@ -73,7 +73,7 @@ mod tests {
         let data = format!("+{}\n+1\n-{}\n+1", steps, steps);
 
         b.iter(|| {
-            assert_eq!(Day1::task_b(&data).unwrap(), steps);
+            assert_eq!(Day01::task_b(&data).unwrap(), steps);
         })
     }
 

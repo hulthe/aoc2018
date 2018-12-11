@@ -6,9 +6,9 @@ use std::collections::HashSet;
 use std::error::Error;
 use std::iter::repeat;
 
-pub struct Day5;
+pub struct Day05;
 
-impl Day5 {
+impl Day05 {
     fn same_letter(a: &char, b: &char) -> bool {
         for al in a.to_lowercase() {
             if al == *b {
@@ -49,7 +49,7 @@ impl Day5 {
     }
 }
 
-impl AoC<usize, usize> for Day5 {
+impl AoC<usize, usize> for Day05 {
     fn task_a(inputs: &str) -> Result<usize, Box<Error>> {
         let input = inputs.lines().next().unwrap();
         Ok(Self::react_polymer(input.chars()))
@@ -83,7 +83,7 @@ impl AoC<usize, usize> for Day5 {
 mod tests {
     extern crate test;
     use self::test::Bencher;
-    use super::Day5;
+    use super::Day05;
     use aoc_base::AoC;
 
     const TEST_DATA_A: &[(&str, usize)] = &[
@@ -97,7 +97,7 @@ mod tests {
     #[test]
     fn test_a() {
         for (input, result) in TEST_DATA_A {
-            assert_eq!(Day5::task_a(input).unwrap(), *result);
+            assert_eq!(Day05::task_a(input).unwrap(), *result);
         }
     }
 
@@ -106,7 +106,7 @@ mod tests {
     #[test]
     fn test_b() {
         let (input, result) = TEST_DATA_B;
-        assert_eq!(Day5::task_b(input).unwrap(), result);
+        assert_eq!(Day05::task_b(input).unwrap(), result);
     }
 
     #[bench]

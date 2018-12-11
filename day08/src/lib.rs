@@ -7,9 +7,9 @@ use aoc_base::AoC;
 use std::error::Error;
 use tree::TreeNode;
 
-pub struct Day8;
+pub struct Day08;
 
-impl AoC<usize, usize> for Day8 {
+impl AoC<usize, usize> for Day08 {
     fn task_a(input: &str) -> Result<usize, Box<Error>> {
         let tree: TreeNode = input.parse()?;
         Ok(tree.iter()
@@ -38,19 +38,19 @@ impl AoC<usize, usize> for Day8 {
 mod tests {
     extern crate test;
     use self::test::Bencher;
-    use super::Day8;
+    use super::Day08;
     use aoc_base::AoC;
 
     const TEST_DATA: &str = "2 3 0 3 10 11 12 1 1 0 1 99 2 1 1 2";
 
     #[test]
     fn test_a() {
-        assert_eq!(Day8::task_a(TEST_DATA).unwrap(), 138);
+        assert_eq!(Day08::task_a(TEST_DATA).unwrap(), 138);
     }
 
     #[test]
     fn test_b() {
-        assert_eq!(Day8::task_b(TEST_DATA).unwrap(), 66);
+        assert_eq!(Day08::task_b(TEST_DATA).unwrap(), 66);
     }
 
     #[bench]

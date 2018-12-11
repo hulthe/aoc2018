@@ -4,7 +4,7 @@ use aoc_base::AoC;
 use std::collections::VecDeque;
 use std::error::Error;
 
-pub struct Day9;
+pub struct Day09;
 
 fn rotate(queue: &mut VecDeque<usize>, n: i32) {
     if queue.len() == 0 {
@@ -55,7 +55,7 @@ fn marble_game(player_count: usize, marble_count: usize) -> usize {
     *player_points.iter().max().unwrap()
 }
 
-impl AoC<usize, usize> for Day9 {
+impl AoC<usize, usize> for Day09 {
     fn task_a(input: &str) -> Result<usize, Box<Error>> {
         let (player_count, marble_count) = parse_input(input)?;
         Ok(marble_game(player_count, marble_count))
@@ -71,7 +71,7 @@ impl AoC<usize, usize> for Day9 {
 mod tests {
     extern crate test;
     use self::test::Bencher;
-    use super::Day9;
+    use super::Day09;
     use aoc_base::AoC;
 
     const TEST_DATA: &[(&str, usize, usize)] = &[
@@ -106,14 +106,14 @@ mod tests {
     #[test]
     fn test_a() {
         for (case, result_a, _) in TEST_DATA {
-            assert_eq!(Day9::task_a(case).unwrap(), *result_a);
+            assert_eq!(Day09::task_a(case).unwrap(), *result_a);
         }
     }
 
     #[test]
     fn test_b() {
         for (case, _, result_b) in TEST_DATA {
-            assert_eq!(Day9::task_b(case).unwrap(), *result_b);
+            assert_eq!(Day09::task_b(case).unwrap(), *result_b);
         }
     }
 
