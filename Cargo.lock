@@ -33,6 +33,7 @@ dependencies = [
  "aoc_2018_day08 0.1.0",
  "aoc_2018_day09 0.1.0",
  "aoc_2018_day10 0.1.0",
+ "aoc_2018_day11 0.1.0",
  "aoc_base 0.1.0",
  "clap 2.32.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "hex 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -124,6 +125,14 @@ name = "aoc_2018_day10"
 version = "0.1.0"
 dependencies = [
  "aoc_base 0.1.0",
+]
+
+[[package]]
+name = "aoc_2018_day11"
+version = "0.1.0"
+dependencies = [
+ "aoc_base 0.1.0",
+ "rayon 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]

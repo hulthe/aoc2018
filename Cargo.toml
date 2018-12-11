@@ -27,3 +27,4 @@ aoc_2018_day07 = { path="day07" }
 aoc_2018_day08 = { path="day08" }
 aoc_2018_day09 = { path="day09" }
 aoc_2018_day10 = { path="day10" }
+aoc_2018_day11 = { path="day11" }

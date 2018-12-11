@@ -13,6 +13,7 @@ use aoc_2018_day07::Day7;
 use aoc_2018_day08::Day8;
 use aoc_2018_day09::Day9;
 use aoc_2018_day10::Day10;
+use aoc_2018_day11::Day11;
 use aoc_base::AoC;
 use clap::{
     app_from_crate, crate_authors, crate_description, crate_name, crate_version, Arg, SubCommand,
@@ -78,7 +79,7 @@ macro_rules! run_days_async {
                 };
 
                 pb.finish_with_message(
-                    &format!("Result A: {:7}   B: {}",
+                    &format!("Result A: {:10}   B: {}",
                              hide_long(&res_a),
                              hide_long(&res_b)));
                 Ok(())
@@ -142,11 +143,11 @@ fn main() {
         .after_help("Don't forget to set your config.toml!")
         .subcommand(SubCommand::with_name("all").about("Compute all days"));
 
-    let app = setup_days!(app, Day1, Day2, Day3, Day4, Day5, Day6, Day7, Day8, Day9, Day10);
+    let app = setup_days!(app, Day1, Day2, Day3, Day4, Day5, Day6, Day7, Day8, Day9, Day10, Day11);
 
     let matches = app.get_matches();
 
-    run_days!(matches, all, Day1, Day2, Day3, Day4, Day5, Day6, Day7, Day8, Day9, Day10, FIXME);
+    run_days!(matches, all, Day1, Day2, Day3, Day4, Day5, Day6, Day7, Day8, Day9, Day10, Day11, FIXME);
 }
 
 #[cfg(test)]
@@ -181,4 +182,5 @@ mod test {
     gen_bench!(bench_day08_a, bench_day08_b, Day8);
     gen_bench!(bench_day09_a, bench_day09_b, Day9);
     gen_bench!(bench_day10_a, bench_day10_b, Day10);
+    gen_bench!(bench_day11_a, bench_day11_b, Day11);
 }
