@@ -14,15 +14,16 @@ use aoc_2018_day08::Day08;
 use aoc_2018_day09::Day09;
 use aoc_2018_day10::Day10;
 use aoc_2018_day11::Day11;
+use aoc_2018_day12::Day12;
 use aoc_base::AoC;
 use clap::{
     app_from_crate, crate_authors, crate_description, crate_name, crate_version, Arg, SubCommand,
 };
 use std::error::Error;
+use std::fmt::Display;
 use std::sync::{mpsc::channel, Arc};
 use std::thread;
 use std::time::Duration;
-use std::fmt::Display;
 
 use crate::input::get_input;
 use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
@@ -143,11 +144,16 @@ fn main() {
         .after_help("Don't forget to set your config.toml!")
         .subcommand(SubCommand::with_name("all").about("Compute all days"));
 
-    let app = setup_days!(app, Day01, Day02, Day03, Day04, Day05, Day06, Day07, Day08, Day09, Day10, Day11);
+    let app = setup_days!(
+        app, Day01, Day02, Day03, Day04, Day05, Day06, Day07, Day08, Day09, Day10, Day11, Day12
+    );
 
     let matches = app.get_matches();
 
-    run_days!(matches, all, Day01, Day02, Day03, Day04, Day05, Day06, Day07, Day08, Day09, Day10, Day11, FIXME);
+    run_days!(
+        matches, all, Day01, Day02, Day03, Day04, Day05, Day06, Day07, Day08, Day09, Day10, Day11,
+        Day12, FIXME
+    );
 }
 
 #[cfg(test)]
@@ -183,4 +189,5 @@ mod test {
     gen_bench!(bench_day09_a, bench_day09_b, Day09);
     gen_bench!(bench_day10_a, bench_day10_b, Day10);
     gen_bench!(bench_day11_a, bench_day11_b, Day11);
+    gen_bench!(bench_day12_a, bench_day12_b, Day12);
 }
